@@ -1,0 +1,8 @@
+cff-version: 1.2.0
+message: Please cite the software and the original NPS datasets used in your build.
+title: 'saguarodata: Auditable longitudinal scientific data'
+type: software
+version: 0.1.0
+license: MIT
+authors:
+  - name: saguarodata contributors

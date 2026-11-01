@@ -1,0 +1,16 @@
+program: vegetation
+evidence: Numbered workbook sheets and accompanying spatial maps
+identity: taxon/plot/round summaries; no individual organism linkage
+rounds:
+  1990:
+    species: Code; workbook header only; mapped attributes separate
+    count: Count; no body records in workbook
+    cover: Cover; units unresolved
+  2000:
+    species: Code
+    count: Count
+    cover: Cover; units unresolved
+  2010:
+    species: Species/Name
+    count: Stems
+    cover: '% Cover; fraction-versus-percent ambiguity; Area (m2) retained'

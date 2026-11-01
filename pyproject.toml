@@ -1,0 +1,27 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "saguarodata"
+version = "0.1.0"
+description = "Auditable data archaeology for longitudinal scientific monitoring"
+requires-python = ">=3.11"
+dependencies = ["pandas>=2.2", "pyarrow>=17", "openpyxl>=3.1", "xlrd>=2.0", "requests>=2.32", "PyYAML>=6", "geopandas>=1.0", "shapely>=2", "pyproj>=3.6", "pypdf>=5"]
+
+[project.optional-dependencies]
+dev = ["pytest>=8"]
+duckdb = ["duckdb>=1.1"]
+
+[project.scripts]
+saguarodata = "saguarodata.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+saguarodata = ["reports/assets/*"]
+
+[tool.pytest.ini_options]
+pythonpath = ["src"]
+testpaths = ["tests"]

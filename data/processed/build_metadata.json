@@ -1,0 +1,160 @@
+{
+  "package_versions": {
+    "saguarodata": "0.1.0",
+    "pandas": "3.0.6",
+    "pyarrow": "26.0.0",
+    "openpyxl": "3.1.5",
+    "xlrd": "2.0.2",
+    "geopandas": "1.2.0",
+    "pyproj": "3.8.0",
+    "shapely": "2.2.0"
+  },
+  "selected_sources": [
+    {
+      "file": "data/raw/boundaries/41c861801bb6feabfd335402f3cfaafcb3203de9f2af5a5b8dffa9506fdc51d5/PlotCorners.xls",
+      "sha256": "41c861801bb6feabfd335402f3cfaafcb3203de9f2af5a5b8dffa9506fdc51d5"
+    },
+    {
+      "file": "data/raw/boundaries/8ac4b642c51d844e64630611da85364ebce316f603465b1bcd838e92a628d121/PlotBoundaries.xls",
+      "sha256": "8ac4b642c51d844e64630611da85364ebce316f603465b1bcd838e92a628d121"
+    },
+    {
+      "file": "data/raw/boundaries/d0090db81a3cc304dcb5db8dd0011ff16dc45bd609fb32247934131bea86ca3d/SaguaroMonitoring_PlotCorner_Boundary.zip",
+      "sha256": "d0090db81a3cc304dcb5db8dd0011ff16dc45bd609fb32247934131bea86ca3d"
+    },
+    {
+      "file": "data/raw/census/4a96f97ae64c60e6dee1c4059eef39e2e719deb1a51ea2a4a70dd3995447bd41/SaguaroCensus_1990.pdf",
+      "sha256": "4a96f97ae64c60e6dee1c4059eef39e2e719deb1a51ea2a4a70dd3995447bd41"
+    },
+    {
+      "file": "data/raw/census/9376f7689dbb53081ab214b1c803c7347219e264fa67925512cff5ed85bf3c65/SaguaroCensus_2010.pdf",
+      "sha256": "9376f7689dbb53081ab214b1c803c7347219e264fa67925512cff5ed85bf3c65"
+    },
+    {
+      "file": "data/raw/census/acd73e553169c2808c3e4829cba17e95bfdb08824144f1985befcfa6a9b589ff/SaguaroCensus_RawData_1990_2000_2010.xlsx",
+      "sha256": "acd73e553169c2808c3e4829cba17e95bfdb08824144f1985befcfa6a9b589ff"
+    },
+    {
+      "file": "data/raw/census/b7bc09774dde5a690c859e074af0a655e3500c5414d223a42b339ad69d1324a2/SaguaroCensus_2020_Report I.pdf",
+      "sha256": "b7bc09774dde5a690c859e074af0a655e3500c5414d223a42b339ad69d1324a2"
+    },
+    {
+      "file": "data/raw/census/c7fec62ffd672adb962cf1350e4a420f2d5be0f3f9fa2e455d4bf9c1ac2c3fe4/Saguaro_Census_2000.pdf",
+      "sha256": "c7fec62ffd672adb962cf1350e4a420f2d5be0f3f9fa2e455d4bf9c1ac2c3fe4"
+    },
+    {
+      "file": "data/raw/census/e47c9e3a54e6b1ab2e4906bc8031e85f02a484143ab2aafc591b63e2bc95a4b8/SaguaroCensus_2020_Report II.pdf",
+      "sha256": "e47c9e3a54e6b1ab2e4906bc8031e85f02a484143ab2aafc591b63e2bc95a4b8"
+    },
+    {
+      "file": "data/raw/ecotone/7ca3845e6fb9872ccfcfa504e6b5618da54657037147ced8e857dade2508dc2c/50mPlots_RawData_2011.xlsx",
+      "sha256": "7ca3845e6fb9872ccfcfa504e6b5618da54657037147ced8e857dade2508dc2c"
+    },
+    {
+      "file": "data/raw/ecotone/7e9118841fa9313e125b970a371c746d1e4b7580a506a9ccf05f25be80c8b5dc/Ecotone_50_Meter_Plot_Survey_2011.pdf",
+      "sha256": "7e9118841fa9313e125b970a371c746d1e4b7580a506a9ccf05f25be80c8b5dc"
+    },
+    {
+      "file": "data/raw/historic_plots/37d7384bfa8dba7c32272752cf27999d291ad940981b261d76ac54983d420496/Funicelli_and_Turner_2002_Report.pdf",
+      "sha256": "37d7384bfa8dba7c32272752cf27999d291ad940981b261d76ac54983d420496"
+    },
+    {
+      "file": "data/raw/historic_plots/6f62e764accb75e61b8b4d0b69c4d42d90fb91c197d85f5ae0f42c5bf9236a3a/Steenbergh&Lowe_HistoricSaguaroPlotSurvey.xls",
+      "sha256": "6f62e764accb75e61b8b4d0b69c4d42d90fb91c197d85f5ae0f42c5bf9236a3a"
+    },
+    {
+      "file": "data/raw/historic_plots/d5eaae009cedae46470a6b69e1ca9d1f940e0c91c27e4760d7081096240290e2/HistoricPlot_Shapefiles.zip",
+      "sha256": "d5eaae009cedae46470a6b69e1ca9d1f940e0c91c27e4760d7081096240290e2"
+    },
+    {
+      "file": "data/raw/section17/751aa64e97da7dcd80f491e796ef9ac85f7108639451dc18bbd42df1677c933a/History_of_Section_17.pdf",
+      "sha256": "751aa64e97da7dcd80f491e796ef9ac85f7108639451dc18bbd42df1677c933a"
+    },
+    {
+      "file": "data/raw/section17/9ea7123d8100350eeb4657c8c8b152a48ca41dd09d208e634136993acb73c14c/Sect17Census_Final.pdf",
+      "sha256": "9ea7123d8100350eeb4657c8c8b152a48ca41dd09d208e634136993acb73c14c"
+    },
+    {
+      "file": "data/raw/section17/c6d3b14e706fb183ad3ad6c423ea15a5ed39c007b14ad07b4da8b40aab1be9c2/Section17_RawData_1941_2011.xlsx",
+      "sha256": "c6d3b14e706fb183ad3ad6c423ea15a5ed39c007b14ad07b4da8b40aab1be9c2"
+    },
+    {
+      "file": "data/raw/section17/fc16c21ea574780376397fe33100198a8149f6d93f46157e602e875d2c89cd53/Section17_Shapefiles.zip",
+      "sha256": "fc16c21ea574780376397fe33100198a8149f6d93f46157e602e875d2c89cd53"
+    },
+    {
+      "file": "data/raw/vegetation/11e5ffa538ad77ed804d8779bb63d2ed4f5a9068aead3186c82337811e987e3b/VegSubplot_RawData_1990.xlsx",
+      "sha256": "11e5ffa538ad77ed804d8779bb63d2ed4f5a9068aead3186c82337811e987e3b"
+    },
+    {
+      "file": "data/raw/vegetation/1fac6c5364b1372625360a42c55cd4f5867d502d524f1a160beaefef1236e409/VegetationSubplotMonitoring_2000.pdf",
+      "sha256": "1fac6c5364b1372625360a42c55cd4f5867d502d524f1a160beaefef1236e409"
+    },
+    {
+      "file": "data/raw/vegetation/81b2f075c9ceb4a502d5717f117c801c4b2aaf243c0d94a671b19c3a7e0c37ee/VegSubplot_RawData_2010.xlsx",
+      "sha256": "81b2f075c9ceb4a502d5717f117c801c4b2aaf243c0d94a671b19c3a7e0c37ee"
+    },
+    {
+      "file": "data/raw/vegetation/882f2ea68ecb57598dbb7d567cc1ca1a3e6193f00c81d494dfb7d5ab1441d102/GIS Data Veg Plots.zip",
+      "sha256": "882f2ea68ecb57598dbb7d567cc1ca1a3e6193f00c81d494dfb7d5ab1441d102"
+    },
+    {
+      "file": "data/raw/vegetation/9fbc65e6e03a5c825c5607de2b31b68630ff5d0b7efe2edcf34e3a0f6d98ea71/VegetationSubplotCorners.xlsx",
+      "sha256": "9fbc65e6e03a5c825c5607de2b31b68630ff5d0b7efe2edcf34e3a0f6d98ea71"
+    },
+    {
+      "file": "data/raw/vegetation/ca3550406602214de75113fd78f3cc756f7166d859473bfc6a5e7a9c9efa4d1b/VegetationSubplot_Report_2011.pdf",
+      "sha256": "ca3550406602214de75113fd78f3cc756f7166d859473bfc6a5e7a9c9efa4d1b"
+    },
+    {
+      "file": "data/raw/vegetation/d91e5b58a66445d681ecf06b61f1f6c46abfc37467ea67ef71b9e796cac5ca81/VegSubplot_RawData_2000.xlsx",
+      "sha256": "d91e5b58a66445d681ecf06b61f1f6c46abfc37467ea67ef71b9e796cac5ca81"
+    }
+  ],
+  "configuration_sha256": {
+    "configs\\schemas\\census.yaml": "cd6ea951757ab1de75a3bda07fca9bf9d52583436f3075ac28091591a5679e32",
+    "configs\\schemas\\historic_plots.yaml": "149d656c357fbc0d9c2d7a60df58deecea560a0baae3af70fde45b85a5621e11",
+    "configs\\schemas\\section17.yaml": "7e88a453ccd9b14d74b7af6c505a50e868d36e196da36cada54daac07ba1e115",
+    "configs\\schemas\\vegetation.yaml": "75c1d724bbd177c4705e1b3fceb66db3a9e42a63e83f174b94b0cb78d206df9b",
+    "configs\\sources.yaml": "483b4a4927c1affcb1eae934b9997bf2a8e8a291ce9ec182bf13f01ff623e8bb",
+    "configs\\validation_rules.yaml": "8dd11f81e46a094c26688fa7273f74af3776f051205e52fb63a7646f0c4751aa"
+  },
+  "implementation_sha256": {
+    "__init__.py": "8c26e4a6d752b853f83d1a3761d52ac5a7baac88b50c7802fa0379782548b976",
+    "__main__.py": "cf7390a2508a0fcad4777a4a629fc5212ab655cb45845975995f835676a834e3",
+    "acquisition\\__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "acquisition\\catalog.py": "468769f755332294a0a0d5f2d2be3773fc8bcae39a4919454af108ba7f950187",
+    "acquisition\\checksums.py": "e3df7567076782ef2cd2a5da3b6824e8ff17b8f0598e3f8f4c519d4c12b0eb21",
+    "acquisition\\downloader.py": "21b572f227f523f2795f2cdd0676fadbfc4ef8e71503bdf9b9944f047e35031d",
+    "api\\__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "api\\dataset.py": "2e14bac31137cbcce213fa06cde633ed9ab2122c492bcfc0ba07eb7bb0f41a81",
+    "cli.py": "eb7c70bd4bac272847d3f690d52894fd26f50f853cdc34422a1bff975b7ec400",
+    "ingest\\__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "ingest\\census.py": "d10a12db3f1d520611bd5503a2b05bb0e492c559a72bf66b52bf5b6b824050c7",
+    "ingest\\common.py": "d88d094b2d1b53756ff2c7c5d49b8987dbe47502acff4bb4ed155b215956479e",
+    "ingest\\excel.py": "ec98e87f0d90d706adc988c6ae44e1c5ea24c23c2c355bb2edd252ec244468c1",
+    "ingest\\historic.py": "d11cfa3cd9b7b4e586d36522f0a94b922b84d87e676c10ea1e82ce90b1d2e1e6",
+    "ingest\\section17.py": "afa796148e2f004b6566eea14d1596876fd28b4c56d2b3fdd6560f3828e559a8",
+    "ingest\\spatial.py": "282d3abdf414ede92bc6bc8e33b7221f83f8003b7b6d522d18db0f82d8b17c44",
+    "ingest\\vegetation.py": "632f313ff3e6608700eaeac93f8814249799a2852cf5e79890a48a3728f78137",
+    "inventory.py": "6b90df2833f81e4506ec3ae409a4d4e319a8e305035f050a9e858cdb23804b19",
+    "jsonutil.py": "d7f6878b6e29d7cbf83af5cfe2e86f32409a1656a4b2f55c38a20c598334ab74",
+    "model\\__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "model\\canonical.py": "44cfc2d808e1d28a7c69a22d4e1bc231b85fae71f58e47559f923fda7eaadd67",
+    "normalize\\__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "normalize\\identifiers.py": "ad0adbb86b89fa4d28252363579e6310ed26432f728dfe5a39373c86b8b05678",
+    "normalize\\missing.py": "e8172ef52e594b469b32d6760ae523a093af6c17fd27822a017418fc4ad3efb5",
+    "normalize\\units.py": "701d11182d1e95c604c4381c0b2375c481b04580600bcd71e3e31224d6a907f5",
+    "pipeline.py": "3b8e824db839cdae58b1e6cb6d5737e195f4c4a385f916e62791c64e051dfcbf",
+    "reports\\__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "reports\\quality_report.py": "ccdcf611a6d56fb17e6d7b7cc5dfe805c38fffc5e46736902fc54ff2da5f42c5",
+    "schema_history.py": "564710d61b1e81cc21634ad43327429c7f2c4b0036e7a3a188ce4604047e56ee",
+    "validation\\__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "validation\\engine.py": "0e05f045a25ec50029d8fbda79107ff758bdb71f7eff2ce921ae847990a9a931",
+    "validation\\rules.py": "d052faca8bda05757ce8a7a8d354b678c8f8931ac78aa386856e8dd0ee334a65",
+    "validation\\spatial.py": "e1eac12cffa3c4d3fdad94fe23088a03e985af0250285152039da0f373aa8383",
+    "validation\\structural.py": "67d099b1d62a4a9b9e6212df3f91c2307204e6b5aca47d5b978e3ad81da86432",
+    "validation\\temporal.py": "99a6c2c8ea705df99af95937096134bc450828c976498b0359a509fb8ff445a8"
+  },
+  "identity_policy": "Historic shared-row IDs except 71G; no Census/Section17 linkage"
+}

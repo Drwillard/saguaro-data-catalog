@@ -1,0 +1,16 @@
+program: census
+evidence: NPS monitoring page and Census workbook Read-me, standalone and combined sheets
+identity: local observation numbers only; cross-round linkage unsupported
+rounds:
+  1990:
+    height: height_class_density
+    arms: not_collected_in_available_table
+    browning: plot_summary
+  2000:
+    height: Height (m)
+    arms: Arms
+    browning: s_stem_br/n_stem_br; scarring separately
+  2010:
+    height: Height (m)
+    arms: Arms
+    browning: not_collected

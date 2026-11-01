@@ -1,0 +1,13 @@
+program: section17
+evidence: Section17 workbook 1941 and 2011 sheets
+identity: No verified crosswalk between Cactus_Number and Sub/FID
+rounds:
+  1941:
+    height: Height_Class; continuous height not collected
+    arms: not_collected
+    status: Dead y/n
+  2011:
+    height: Height_m_
+    arms: arms
+    status: not_collected_as_explicit_field
+    coordinates: x_coord/y_coord; companion spatial CRS EPSG26912; layer name says 2012

@@ -1,0 +1,24 @@
+program: historic_plots
+evidence: Shared longitudinal Sheet1; Funicelli and Turner 2002 Methods p.5; spatial height fields
+identity: shared-row SaguaroID except 71G
+rounds:
+  1975:
+    height: Height_1975; meters inferred
+    arms: Arms_1975
+    status: Notes_1975; exact phrases only
+    holes: not_collected
+  2001:
+    height: Height_2001; actual 2001-2002 round; meters inferred
+    arms: Arms_2001
+    status: Notes_2001; exact phrases only
+    holes: not_collected
+  2010:
+    height: Height_2010; meters inferred
+    arms: Arms_2010
+    status: Notes_2010; exact phrases only
+    holes: Holes_2010
+  2014:
+    height: Height_2014; meters inferred
+    arms: Arms_2014
+    status: Notes_2014; exact phrases only
+    holes: Holes_2014

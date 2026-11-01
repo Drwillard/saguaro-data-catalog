@@ -1,0 +1,8 @@
+shrinkage_absolute_m: 0.5
+shrinkage_fraction: 0.2
+robust_mad_multiplier: 6
+minimum_growth_pairs: 10
+coordinate_displacement_warning_m: 15
+plot_geometry_difference_fraction: 0.01
+# A screening vicinity, not an official park boundary. degrees EPSG:4326.
+vicinity_bbox: [-111.4, 31.9, -110.3, 32.6]
