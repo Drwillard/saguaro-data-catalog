@@ -181,8 +181,55 @@ with sync_playwright() as playwright:
     page.locator('#close-detail').click()
     checks.append('Fractional source height-class estimates are preserved; vegetation has separate source evidence')
 
+    page.locator('.tabs [data-tab="photos"]').click()
+    page.wait_for_function('photoCatalog && visiblePhotos.length===548')
+    expect(page.locator('#photo-status')).to_contain_text('300 matching iNaturalist observations')
+    assert page.locator('#photo-collections a').count()==3
+    assert page.locator('#view-photos img').count()==0
+    assert page.evaluate('data.photo_references.length')==9
+    expect(page.locator('#photo-references')).to_contain_text('wrong photo')
+    page.locator('#photo-references button[data-entity]').first.click()
+    expect(page.locator('.observation-photos')).to_contain_text('No verified photo link')
+    page.locator('[data-photo-browse]').click()
+    expect(page.locator('#detail')).not_to_be_visible()
+    expect(page.locator('#view-photos')).to_be_visible()
+    page.fill('#photo-search','99676577')
+    page.wait_for_function('visiblePhotos.length>0 && visiblePhotos.every(p=>p.observation_id===99676577)')
+    assert page.locator('#photo-links-table a').first.get_attribute('href')=='https://www.inaturalist.org/observations/99676577'
+    assert page.locator('#photo-links-table a').nth(1).get_attribute('href').startswith('https://www.inaturalist.org/photos/')
+    with page.expect_download() as info:page.locator('#export-photo-links').click()
+    info.value.save_as(str(out/'photo-links.csv'))
+    with (out/'photo-links.csv').open(newline='',encoding='utf8') as stream:
+        rows=list(csv.DictReader(stream));assert rows and all(row['observation_id']=='99676577' and row['attribution'] for row in rows)
+    page.fill('#photo-search','');page.select_option('#photo-license','cc-by')
+    assert page.evaluate('visiblePhotos.length>0 && visiblePhotos.every(p=>p.license==="cc-by")')
+    page.select_option('#photo-license','')
+    page.screenshot(path=str(out/'photo-sources.png'),full_page=True)
+    page.reload();expect(page.locator('#view-photos')).to_be_visible(timeout=30000)
+    page.wait_for_function('photoCatalog && visiblePhotos.length===548')
+    checks.append('Original photo links preserve attribution/license; NPS references, search, export and photo deep links work without embedding images')
+
+    page.goto(args.url+'#tab=map&entity=fbc090fb9c5184f1043c1027&mapBackground=none')
+    page.reload()  # Load the deep link as a new document, including its fragment.
+    expect(page.locator('#detail')).to_be_visible(timeout=30000)
+    expect(page.locator('.observation-photos')).to_contain_text('cactus K30')
+    expect(page.locator('.observation-photos')).to_contain_text('plot 75K')
+    expect(page.locator('.observation-photos')).to_contain_text('No verified photo link')
+    assert page.locator('.observation-photos a').first.get_attribute('href')=='https://irma.nps.gov/DataStore/Reference/Profile/2225187'
+    expect(page.locator('.observation-photos')).to_contain_text('landscape context')
+    assert page.locator('.observation-photos a[href*="inaturalist"]').count()==0
+    photo_box=page.locator('.observation-photos').bounding_box()
+    finding_heading=page.locator('#detail-body h3').filter(has_text='Review findings').bounding_box()
+    assert photo_box['y']<finding_heading['y']
+    page.screenshot(path=str(out/'k30-photo-availability.png'))
+    page.locator('#close-detail').click()
+    checks.append('K30 observation exposes original source and contextual photo links near the top, without claiming an unmatched cactus photo')
+
     page.set_viewport_size({'width':390,'height':844})
     page.goto(args.url);expect(page.locator('#application')).to_be_visible(timeout=60000)
+    assert page.evaluate('document.documentElement.scrollWidth <= window.innerWidth+1')
+    page.locator('.tabs [data-tab="photos"]').click()
+    page.wait_for_function('photoCatalog!==null')
     assert page.evaluate('document.documentElement.scrollWidth <= window.innerWidth+1')
     page.screenshot(path=str(out/'mobile.png'),full_page=True)
     page.locator('[data-tab="findings"]').click()

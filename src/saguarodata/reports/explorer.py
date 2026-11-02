@@ -1,5 +1,6 @@
 """Export a local, interactive research report without a server-side dependency."""
 import json
+import re
 from pathlib import Path
 import shutil
 import numpy as np
@@ -34,6 +35,16 @@ def export_explorer(root, ds, summary):
     details_folder = folder / 'details'
     details_folder.mkdir(exist_ok=True)
     observations = _records(ds.observations())
+    photo_references = {}
+    for row in sorted(observations, key=lambda row:row['survey_year']):
+        raw = _decode(row.get('raw_values_json')) or {}
+        mentions = {key:value for key,value in raw.items() if re.search(r'\bphoto(?:graph)?s?\b', str(value), re.I)}
+        if mentions:
+            key = (row['source_file'], row['source_sheet'], row['source_row'])
+            photo_references[key] = dict(observation_id=row['observation_id'], program_id=row['program_id'],
+                plot_id=row['plot_id'], source_individual_id=row['source_individual_id'],
+                source_file=row['source_file'], source_sheet=row['source_sheet'], source_row=row['source_row'],
+                mentions=mentions)
     obs_index = {r['observation_id']: r for r in observations}
     pairs=[]
     for organism, group in ds.observations().dropna(subset=['organism_id']).groupby('organism_id'):
@@ -102,7 +113,7 @@ def export_explorer(root, ds, summary):
         transformer = Transformer.from_crs(row['crs'], 'EPSG:4326', always_xy=True)
         shape = transform(shape,lambda coordinates:np.array(transformer.transform(coordinates[:,0],coordinates[:,1])).T).simplify(.000005, preserve_topology=True)
         geometry.append(dict(type='Feature', properties=dict(plot_id=row['plot_id'], program_id=row['program_id']),geometry=mapping(shape)))
-    payload = dict(observation_columns=OBS_COLUMNS,
+    payload = dict(photo_references=list(photo_references.values()), observation_columns=OBS_COLUMNS,
         observations=[[r.get(c) for c in OBS_COLUMNS] for r in observations],
         finding_columns=FINDING_COLUMNS, findings=finding_rows, summary=summary,
         plots=dict(type='FeatureCollection',features=geometry),pairs=pairs,
@@ -126,6 +137,8 @@ def export_explorer(root, ds, summary):
         shutil.copyfile(assets / name, folder / name)
     if (assets / 'geographic_context.json').exists():
         shutil.copyfile(assets / 'geographic_context.json', folder / 'geographic_context.json')
+    if (assets / 'photo_links.json').exists():
+        shutil.copyfile(assets / 'photo_links.json', folder / 'photo_links.json')
     for image in assets.glob('map_*.jpg'):
         shutil.copyfile(image, folder / image.name)
     html = (assets / 'explorer.html').read_text(encoding='utf8')

@@ -83,6 +83,8 @@ Open http://127.0.0.1:8000/data_quality_report.html. Click through sampling-fram
 
 On **Spatial view**, saguaro icons use progressively darker greens for one through four distinct survey rounds. Hollow gray cacti mean individual history is unknown. Hover shows exact counts and years; page year filters do not change the full-history count. Use **Tucson region** for the park/city overview, **Fit selected records** for the filtered cacti, and the layer checkboxes for roads, boundaries and labels. Topographic contours describe ground elevation; cactus height is a separate measurement.
 
+**Photos & original sources** links to NPS/USGS historical landscape photography and 548 iNaturalist photos from 300 observations in the separate morphology pilot. Search photo IDs, observation IDs or photographer attribution, filter licenses, and export original-source links as CSV. The app does not download or embed these photographs. Nine physical NPS source rows mention photos without supplying verified image URLs; these references open their observation evidence and original workbook. No photo-to-NPS-individual crosswalk is inferred. See [photo sources and link metadata](docs/photo_sources.md).
+
 The bundled map context is part of the source assets. `saguarodata all` does not refresh it. To refresh it separately, follow the cache and acquisition instructions in [Geographic context and terrain](docs/interactive_report.md#geographic-context-and-terrain), then run `saguarodata report`. Live terrain images are contextual and are not reproducible historical research inputs.
 
 Optional browser checks require Playwright and an installed Microsoft Edge browser, plus the running HTTP server:

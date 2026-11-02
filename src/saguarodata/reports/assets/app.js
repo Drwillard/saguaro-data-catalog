@@ -132,15 +132,18 @@ function drawMapContext(ctx,x,y,width,height,sx) {
 }
 let pairsPlot=null,visiblePairs=[];
 let summaryRows={},visibleSummaries=[];
+let photoCatalog=null,photoPromise=null,visiblePhotos=[];
 const shardCache = new Map();
 const hashKeys=['tab','program','year','q','rule','severity','mode','pairMeasure','pairInterval','summaryKind','representation','entity','fi'];
 state.mapBackground='topo';state.mapView='records';
 hashKeys.push('mapBackground','mapView');
+state.photoQ='';state.photoLicense='';state.pagePhotos=0;
+hashKeys.push('photoQ','photoLicense');
 
 function readHash() {
   const params=new URLSearchParams(location.hash.slice(1));
   for (const key of hashKeys) if(params.has(key)) state[key]=params.get(key);
-  if(!['overview','changes','records','summaries','findings','map','sources'].includes(state.tab)) state.tab='overview';
+  if(!['overview','changes','records','summaries','findings','map','sources','photos'].includes(state.tab)) state.tab='overview';
   if(!['topo','relief','none'].includes(state.mapBackground))state.mapBackground='topo';
   if(!['records','region'].includes(state.mapView))state.mapView='records';
 }
@@ -194,7 +197,7 @@ function render() {
   for(const key of ['program','year','rule','severity']) $(key).value=state[key];
   $('search').value=state.q; $('record-mode').value=state.mode; $('measure').value=state.measure;
   document.querySelectorAll('.tabs [data-tab]').forEach(button=>button.setAttribute('aria-selected',String(button.dataset.tab===state.tab)));
-  for(const tab of ['overview','changes','records','summaries','findings','map','sources']) $('view-'+tab).hidden=state.tab!==tab;
+  for(const tab of ['overview','changes','records','summaries','findings','map','sources','photos']) $('view-'+tab).hidden=state.tab!==tab;
   $('filter-summary').textContent=`${state.program?label(state.program):'All sampling frames'} · ${state.year?'source year '+state.year:'all source years'} · ${fmt(baseRecords.length)} organism observations${state.q?' · matching “'+state.q+'”':''}`;
   for(const kind of ['plot','vegetation']) {
     const count=summaryRows[kind].filter(summaryMatches).length;
@@ -208,6 +211,50 @@ function render() {
   if(state.tab==='findings') renderFindings();
   if(state.tab==='map') requestAnimationFrame(drawMap);
   if(state.tab==='sources') renderSources();
+  if(state.tab==='photos') renderPhotos();
+}
+function photoLink(url,title) {
+  try{
+    const parsed=new URL(url);
+    if(parsed.protocol!=='https:'||!['www.inaturalist.org','static.inaturalist.org','inaturalist-open-data.s3.amazonaws.com'].includes(parsed.hostname))return esc(title+' unavailable');
+    return `<a href="${esc(url)}" target="_blank" rel="noopener noreferrer">${esc(title)} ↗</a>`;
+  }catch{return esc(title+' unavailable');}
+}
+async function renderPhotos() {
+  const references=data.photo_references||[];
+  $('photo-references').innerHTML=references.length?`<table><thead><tr><th>Open source record</th><th>Original field / note</th><th>Original workbook</th></tr></thead><tbody>${references.map(row=>{
+    const file=data.files.find(file=>file.local_filename===row.source_file);
+    return `<tr><td><button class="textbutton" data-entity="${esc(row.observation_id)}">${esc(label(row.program_id))} · ${esc(row.plot_id)} · ${esc(row.source_individual_id||'source row '+row.source_row)}</button></td><td>${Object.entries(row.mentions).map(([key,value])=>`<strong>${esc(key)}</strong>: ${esc(value)}`).join('<br>')}</td><td>${file?`<a href="${esc(file.direct_download_url)}" target="_blank" rel="noopener">${esc(file.filename)} ↗</a>`:''}<br>${esc(row.source_sheet)} · row ${row.source_row}</td></tr>`;
+  }).join('')}</tbody></table>`:empty('No photo references found in the NPS source rows.');
+  $('photo-search').value=state.photoQ;
+  $('export-photo-links').disabled=true;
+  try{
+    if(!photoCatalog){
+      $('photo-status').textContent='Loading local photo-link metadata…';
+      if(!photoPromise)photoPromise=fetch('explorer/photo_links.json').then(response=>{
+        if(!response.ok)throw new Error('Photo-link catalog unavailable');return response.json();
+      }).then(value=>photoCatalog=value).catch(error=>{photoPromise=null;throw error;});
+      await photoPromise;
+    }
+    if(state.tab!=='photos')return;
+    $('photo-license').innerHTML='<option value="">All licenses</option>'+[...new Set(photoCatalog.photos.map(row=>row.license))].sort().map(license=>`<option value="${esc(license)}">${esc(license.toUpperCase())}</option>`).join('');
+    if(![...$('photo-license').options].some(option=>option.value===state.photoLicense))state.photoLicense='';
+    $('photo-license').value=state.photoLicense;
+    const query=state.photoQ.trim().toLowerCase();
+    visiblePhotos=photoCatalog.photos.filter(row=>(!state.photoLicense||row.license===state.photoLicense)&&(!query||[row.observation_id,row.photo_id,row.attribution].join(' ').toLowerCase().includes(query)));
+    $('photo-status').textContent=`${fmt(visiblePhotos.length)} / ${fmt(photoCatalog.photos.length)} photo links · ${fmt(new Set(visiblePhotos.map(row=>row.observation_id)).size)} matching iNaturalist observations. Links open the original provider; no images are fetched by this report.`;
+    $('photo-links-table').innerHTML=visiblePhotos.length?`<table><thead><tr><th>iNaturalist observation</th><th>Photo</th><th>Photographer / attribution</th><th>License</th><th>Original sources</th></tr></thead><tbody>${pageRows(visiblePhotos,'pagePhotos').map(row=>`<tr><td>${photoLink(row.observation_url,String(row.observation_id))}</td><td>${row.photo_id}</td><td>${esc(row.attribution)}</td><td>${esc(row.license.toUpperCase())}</td><td><div class="photo-source-links">${photoLink(row.photo_page_url,'Photo page')}${photoLink(row.image_url,'Image at source')}</div></td></tr>`).join('')}</tbody></table>`:empty('No photos match this search and license filter.');
+    pagination('photo-links-pagination',visiblePhotos,'pagePhotos');
+    $('export-photo-links').disabled=false;syncHash();
+  }catch(error){$('photo-status').textContent='The iNaturalist link catalog could not be loaded. Historical collection links above remain available.';$('photo-links-table').innerHTML='';$('photo-links-pagination').innerHTML='';}
+}
+function photoEvidenceHTML(detail) {
+  const mentions=Object.entries(detail.raw||{}).filter(([key,value])=>/\bphoto(?:graph)?s?\b/i.test(String(value)));
+  if(detail.kind!=='observation'&&!mentions.length)return '';
+  const row=detail.canonical;
+  const file=data.files.find(file=>file.local_filename===row.source_file);
+  const identifier=[row.source_individual_id?`cactus ${row.source_individual_id}`:'this source observation',row.source_plot_id?`plot ${row.source_plot_id}`:row.plot_id,row.survey_year].filter(Boolean).join(' · ');
+  return `<section class="observation-photos" aria-label="Photos for this observation"><h3>Photos for this observation</h3><p><strong>${esc(identifier)}</strong><br>No verified photo link has been found for this cactus in the acquired sources.</p>${mentions.length?`<p class="caption">The original row mentions photography. These notes may refer to another survey year represented in the row:</p>${mentions.map(([key,value])=>`<p class="caption"><strong>${esc(key)}</strong>: ${esc(value)}</p>`).join('')}`:''}<div class="photo-source-links">${file?`<a href="${esc(file.source_url)}" target="_blank" rel="noopener">Original NPS source record ↗</a>`:''}<a href="https://www.nps.gov/sagu/learn/nature/long-term-monitoring.htm" target="_blank" rel="noopener">NPS historical photos · landscape context ↗</a><a href="https://www.usgs.gov/media/slideshows/repeat-photographs-saguaro-national-monument-east-now-saguaro-national-park-rincon" target="_blank" rel="noopener">USGS repeat photos · landscape context ↗</a></div><p class="caption">Landscape photos and the separate iNaturalist collection are not verified images of this individual.</p><button data-photo-browse="true">Browse all photo sources</button></section>`;
 }
 function tally(rows, field) {
   const counts=new Map();
@@ -566,7 +613,7 @@ function renderDetail(detail) {
   const sourceField=selectedFinding?.field||'';
   const rawHTML=`<div class="scroll"><table><thead><tr><th>Original field</th><th>Source value</th></tr></thead><tbody>${Object.entries(detail.raw||{}).map(([key,value])=>`<tr class="${highlight.has(key)||key===sourceField?'raw-highlight':''}"><td>${esc(key)}</td><td>${value===''?'<span class="caption">(blank string)</span>':value===null?'<span class="caption">(null)</span>':esc(typeof value==='object'?pretty(value):value)}</td></tr>`).join('')}</tbody></table></div>`;
   const transformsHTML=detail.transforms.length?`<div class="scroll"><table><thead><tr><th>Canonical field</th><th>Source field</th><th>Source value</th><th>Normalized value</th><th>Transformation</th><th>Value kind</th></tr></thead><tbody>${detail.transforms.map(t=>`<tr><td>${esc(t.field)}</td><td>${esc(t.source_column||'not collected')}</td><td>${t.source_value===''?'(blank)':esc(t.source_value??'null')}</td><td>${esc(t.normalized_value??'null')}</td><td class="mono">${esc(t.transformation)}</td><td>${badge(t.value_kind,t.value_kind)}</td></tr>`).join('')}</tbody></table></div>`:empty('No field-normalization trace is recorded for this source representation. Raw attributes and file lineage remain available.');
-  $('detail-body').innerHTML=`<div class="record-facts">${facts.map(([title,value])=>`<div class="record-fact"><small>${esc(title)}</small>${esc(value)}</div>`).join('')}</div><h3>Review findings (${detail.findings.length})</h3>${findingsHTML}${isObservation?historyHTML(row):''}<h3>Source lineage</h3>${sourceBox(row)}<div class="detail-tabs" role="tablist" aria-label="Evidence views"><button data-detail-tab="raw" aria-selected="true" role="tab">Raw source values</button><button data-detail-tab="transforms" aria-selected="false" role="tab">Transformations</button><button data-detail-tab="canonical" aria-selected="false" role="tab">Canonical record</button></div><div data-detail-panel="raw">${rawHTML}</div><div data-detail-panel="transforms" hidden>${transformsHTML}</div><div data-detail-panel="canonical" hidden><pre class="raw-json">${esc(pretty(row))}</pre></div>`;
+  $('detail-body').innerHTML=`<div class="record-facts">${facts.map(([title,value])=>`<div class="record-fact"><small>${esc(title)}</small>${esc(value)}</div>`).join('')}</div>${photoEvidenceHTML(detail)}<h3>Review findings (${detail.findings.length})</h3>${findingsHTML}${isObservation?historyHTML(row):''}<h3>Source lineage</h3>${sourceBox(row)}<div class="detail-tabs" role="tablist" aria-label="Evidence views"><button data-detail-tab="raw" aria-selected="true" role="tab">Raw source values</button><button data-detail-tab="transforms" aria-selected="false" role="tab">Transformations</button><button data-detail-tab="canonical" aria-selected="false" role="tab">Canonical record</button></div><div data-detail-panel="raw">${rawHTML}</div><div data-detail-panel="transforms" hidden>${transformsHTML}</div><div data-detail-panel="canonical" hidden><pre class="raw-json">${esc(pretty(row))}</pre></div>`;
 }
 async function openSource(index) {
   await ensureSources();const row=sources.inventory[index];if(!row)return;
@@ -585,6 +632,9 @@ function csv(rows,columns,name) {
   downloadText([columns.map(cell).join(','),...rows.map(row=>columns.map(key=>cell(row[key])).join(','))].join('\r\n'),name,'text/csv;charset=utf-8');toast(`Exported ${fmt(rows.length)} rows.`);
 }
 function attachEvents() {
+  $('photo-search').oninput=event=>{state.photoQ=event.target.value;state.pagePhotos=0;renderPhotos();};
+  $('photo-license').onchange=event=>{state.photoLicense=event.target.value;state.pagePhotos=0;renderPhotos();};
+  $('export-photo-links').onclick=()=>csv(visiblePhotos,['observation_id','photo_id','observation_url','photo_page_url','image_url','license','attribution'],'saguarodata-photo-links.csv');
   $('program').onchange=event=>updateScope({program:event.target.value});
   $('year').onchange=event=>updateScope({year:event.target.value});
   let searchTimer;$('search').oninput=event=>{clearTimeout(searchTimer);const value=event.target.value;searchTimer=setTimeout(()=>updateScope({q:value}),180);};
@@ -613,12 +663,13 @@ function attachEvents() {
   $('detail').addEventListener('close',()=>{detailToken++;state.entity='';state.fi='';syncHash();});
   document.addEventListener('click',event=>{
     const target=event.target.closest('button,[data-entity], [data-source]');if(!target)return;
+    if(target.dataset.photoBrowse){$('detail').close();setTab('photos');return;}
     if(target.dataset.tab){if(target.dataset.summaryKind){state.summaryKind=target.dataset.summaryKind;state.representation='';state.pageSummary=0;}setTab(target.dataset.tab);return;}
     if(target.dataset.programPick){updateScope({program:state.program===target.dataset.programPick?'':target.dataset.programPick});return;}
     if(target.dataset.rulePick){state.rule=target.dataset.rulePick;state.severity='';state.pageFind=0;setTab('findings');return;}
     if(target.dataset.cellProgram){Object.assign(state,{program:target.dataset.cellProgram,year:target.dataset.cellYear,tab:'records',mode:'all',measure:state.coverageField});updateScope({});return;}
     if(target.dataset.sort){state.direction=state.sort===target.dataset.sort?-state.direction:1;state.sort=target.dataset.sort;state.pageObs=0;renderRecords();return;}
-    if(target.dataset.pageKey){state[target.dataset.pageKey]+=Number(target.dataset.pageDelta);if(state.tab==='sources')renderSources();else if(state.tab==='findings')renderFindings();else if(state.tab==='changes')renderPairs();else if(state.tab==='summaries')renderSummaries();else renderRecords();return;}
+    if(target.dataset.pageKey){state[target.dataset.pageKey]+=Number(target.dataset.pageDelta);if(state.tab==='sources')renderSources();else if(state.tab==='findings')renderFindings();else if(state.tab==='changes')renderPairs();else if(state.tab==='summaries')renderSummaries();else if(state.tab==='photos')renderPhotos();else renderRecords();return;}
     if(target.dataset.summaryYear){updateScope({year:target.dataset.summaryYear});return;}
     if(target.dataset.entity){openEntity(target.dataset.entity,target.dataset.fi??'');return;}
     if(target.dataset.source!==undefined){openSource(Number(target.dataset.source));return;}

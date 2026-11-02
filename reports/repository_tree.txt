@@ -35,6 +35,7 @@ data/raw/manifest.json
 docs/canonical_model.md
 docs/data_sources.md
 docs/interactive_report.md
+docs/photo_sources.md
 docs/protocol_differences.md
 docs/provenance.md
 docs/research_notes.md
@@ -58,6 +59,7 @@ scripts/check_explorer.py
 scripts/check_reproducibility.py
 scripts/fetch_map_context.py
 scripts/finalize_artifacts.py
+scripts/import_photo_links.py
 scripts/inspect_sources.py
 scripts/inventory.py
 src/saguarodata/__init__.py
@@ -93,6 +95,7 @@ src/saguarodata/reports/assets/explorer.html
 src/saguarodata/reports/assets/geographic_context.json
 src/saguarodata/reports/assets/map_relief.jpg
 src/saguarodata/reports/assets/map_topo.jpg
+src/saguarodata/reports/assets/photo_links.json
 src/saguarodata/reports/explorer.py
 src/saguarodata/reports/quality_report.py
 src/saguarodata/schema_history.py
