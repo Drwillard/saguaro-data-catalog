@@ -4,31 +4,31 @@ Derived evidence-flow node/edge tables; canonical tables and the raw manifest re
 
 | Node type | Count |
 |---|---:|
-| canonical_field | 2,389,004 |
+| canonical_field | 3,023,324 |
 | canonical_observation | 152,227 |
 | organism | 3,169 |
 | plot | 610 |
 | source_artifact | 25 |
-| source_field | 193,258 |
+| source_field | 196,882 |
 | source_reference | 15 |
 | source_row | 145,325 |
 | source_sheet | 763 |
 | survey_event | 26 |
-| transformation | 213,326 |
+| transformation | 223,852 |
 | validation_finding | 17,708 |
 
 | Edge type | Count |
 |---|---:|
-| belongs_to | 2,389,004 |
-| contains | 339,346 |
+| belongs_to | 3,023,324 |
+| contains | 342,970 |
 | contributes | 502 |
-| derives | 232,568 |
+| derives | 243,094 |
 | geometry_for | 165 |
 | has_observation | 140,041 |
 | references | 25 |
 | represents | 152,227 |
-| row_lineage_only | 2,156,436 |
-| transformed_by | 199,932 |
+| row_lineage_only | 2,780,230 |
+| transformed_by | 210,458 |
 | triggered | 17,708 |
 | uncollected_or_unmapped_input | 13,394 |
 | validated_by | 20,777 |
@@ -37,12 +37,12 @@ Derived evidence-flow node/edge tables; canonical tables and the raw manifest re
 
 - observations: 65,326
 - observations_row_lineage_complete: 65,326
-- expected_normalized_fields: 213,326
-- normalized_fields_with_transformation: 213,326
-- normalized_fields_with_verified_source_mapping: 204,030
-- observations_all_expected_transforms: 65,326
+- expected_normalized_fields: 223,852
+- normalized_fields_with_transformation: 223,852
+- normalized_fields_with_verified_source_mapping: 214,556
 - observations_complete_field_lineage: 56,030
-- canonical_fields_without_explicit_mapping: 1,635,030
+- observations_all_expected_transforms: 65,326
+- canonical_fields_without_explicit_mapping: 2,258,824
 - findings: 17,708
 - findings_complete_source_row_lineage: 17,708
 - findings_complete_evidence_lineage: 6,300
@@ -59,9 +59,9 @@ Row-lineage completeness means an existing manifest artifact, inventoried sheet/
 
 ## Executed temporal finding trace
 
-Finding `e592cb8f599da405fbb4e25c` (`TEMPORAL_SHRINKAGE`) has 95 nodes and 163 edges in its upstream evidence slice.
+Finding `da7a103cd6d8ed6e4c574ef4` (`TEMPORAL_SHRINKAGE`) has 118 nodes and 206 edges in its upstream evidence slice.
 
-Canonical records (including boundary context): `organism_observations/5d3981e11a7bb05479886055`, `organism_observations/4b1354b9e3e167bba7be64c9`, `spatial_features/8957d449c444b73a8ad70ade`
+Canonical records (including boundary context): `spatial_features/e25ddc69682f4e9c19d738fa`, `organism_observations/b2948765148316bd69993086`, `organism_observations/8d23997dd017594d7091a10c`
 
 The trace includes each explicit contributing observation, its canonical fields, recorded transformations, source cells/rows, sheets, artifact SHA and NPS reference. Shared-row observations can legitimately converge on the same source row; this is not independent repeated GPS evidence.
 

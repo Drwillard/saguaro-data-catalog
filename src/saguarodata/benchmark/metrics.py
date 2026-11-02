@@ -16,6 +16,18 @@ def signature(alert):
     value=alert.get('observed_value')
     try:value=json.loads(value) if isinstance(value,str) else value
     except ValueError:pass
+    # Interpretive evidence is not an additional triggering condition. A changed
+    # note/Verify/other measurement must not relabel an existing temporal screen.
+    core={
+        'TEMPORAL_SHRINKAGE':('height_before','height_after','elapsed_years'),
+        'TEMPORAL_ARM_DECREASE':('arms_before','arms_after'),
+        'TEMPORAL_GROWTH_OUTLIER':('annual_growth_m',),
+        'TEMPORAL_STATUS_CONTRADICTION':('previous_status','current_status','transition'),
+        'TEMPORAL_MEASUREMENT_AFTER_DEATH':('previous_status','height'),
+        'TEMPORAL_REOBSERVED':('previous_status','current_status'),
+        'TEMPORAL_STATUS_RESOLVED':('previous_status','current_status'),
+    }.get(alert.get('rule_id'))
+    if core and isinstance(value,dict):value={key:value.get(key) for key in core}
     def normalize(v):
         if isinstance(v,dict):return {k:normalize(x) for k,x in v.items() if k not in ('previous','previous_observation_id','previous_feature','empirical_upper','median','robust_spread','n')}
         if isinstance(v,list):return [normalize(x) for x in v]
@@ -44,6 +56,7 @@ def score(truth,baseline,observed):
         tp=sum(matches(row,truth) for row in new);fp=len(new)-tp
         hit=tp>0
         rows.append(dict(corruption_id=truth['corruption_id'],scenario=truth['scenario'],corruption_class=truth['corruption_class'],seed=truth['seed'],layer=layer,
+            scenario_semantics=truth.get('scenario_semantics','integrity_violation'),
             intensity=float(truth.get('intensity',1.)),
             injected=1,detected=int(hit),missed=int(not hit),matched_alerts=tp,false_positive_alerts=fp,
             baseline_alerts=len(old),new_alerts=len(new),validator_error=observed[layer]['error']))

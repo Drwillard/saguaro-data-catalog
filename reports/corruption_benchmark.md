@@ -1,23 +1,32 @@
-# Synthetic corruption benchmark
+# Synthetic intervention benchmark
 
 Executed runs: [{"seeds": [1, 2, 3], "count": 100, "intensity": 1.0}, {"seeds": [42], "count": 30, "intensity": 0.25}]. Canonical cohort: 1200 observations; 179 spatial features. Complete selected organism histories and all plot context are retained. This is a deterministic cohort experiment on real canonical records, not a whole-corpus prevalence estimate.
 
-Each trial starts from the same unchanged cohort and injects one corruption. All six layers run independently. Strict schema types/nullability/enums and conventional scalar ranges (height 0–30 m, arms 0–200, geographic ranges), integer counts, primary/composite keys and exact row duplicates form the baselines. The structural/spatial layers include the existing checks plus explicit identity/event/unit and CRS/geometry cross-checks added in this extension. Provenance checks are a separate integrity layer.
+Each trial starts from the same unchanged cohort and applies one synthetic intervention. All six layers run independently. Strict schema types/nullability/enums and conventional scalar ranges (height 0–30 m, arms 0–200, geographic ranges), integer counts, primary/composite keys and exact row duplicates form the baselines. The structural/spatial layers include the existing checks plus explicit identity/event/unit and CRS/geometry cross-checks added in this extension. Provenance checks are a separate integrity layer.
 
-Completed injections: 330; ineligible trials: 0. Skips are not detections or misses. Validator failures are misses and are counted separately.
+Completed synthetic interventions: 330; ineligible trials: 0. Skips are not detections or misses. Validator failures are misses and are counted separately.
 
 | layer | injected | detections | misses | false_positives | matched_alerts | precision | alert_precision | recall | f1 | seed_recall_std | validator_errors |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| provenance | 330 | 230 | 100 | 0 | 88461 | 1.000 | 1.000 | 0.697 | 0.821 | 0.016 | 0 |
+| provenance | 330 | 230 | 100 | 0 | 99596 | 1.000 | 1.000 | 0.697 | 0.821 | 0.016 | 0 |
 | row | 330 | 118 | 212 | 0 | 200 | 1.000 | 1.000 | 0.358 | 0.527 | 0.014 | 0 |
 | schema | 330 | 75 | 255 | 0 | 75 | 1.000 | 1.000 | 0.227 | 0.370 | 0.013 | 0 |
 | spatial | 330 | 96 | 234 | 8 | 171 | 0.923 | 0.955 | 0.291 | 0.442 | 0.019 | 0 |
 | structural | 330 | 115 | 215 | 0 | 15782 | 1.000 | 1.000 | 0.348 | 0.517 | 0.007 | 0 |
 | temporal | 330 | 51 | 279 | 10 | 67 | 0.836 | 0.870 | 0.155 | 0.261 | 0.012 | 0 |
 
-Precision counts one matched detection per injected error, collapses redundant matching alerts, and treats newly emitted alerts outside the recorded affected rows/histories as operational false positives. Alert precision additionally reports matched alerts / all new alerts. Recall is detected injected corruptions / completed corruptions. F1 uses the event precision and injection recall. Baseline signatures are subtracted; pre-existing scientific findings are neither scored as successes nor declared source errors. Unmatched new alerts can be secondary real effects of the injection rather than scientifically false claims.
+Precision counts one matched detection per intervention, collapses redundant matching alerts, and treats newly emitted alerts outside the recorded affected rows/histories as operational false positives. Alert precision additionally reports matched alerts / all new alerts. Recall is detected interventions / completed interventions. F1 uses the event precision and injection recall. Baseline signatures are subtracted; pre-existing scientific findings are neither scored as successes nor declared source errors. Unmatched new alerts can be secondary real effects of the injection rather than scientifically false claims.
 
-## Executed detection rates by corruption class
+## Executed detection rates by intervention semantics
+
+| scenario_semantics | schema | row | structural | temporal | spatial | provenance |
+| --- | --- | --- | --- | --- | --- | --- |
+| integrity_violation | 0.259 | 0.376 | 0.397 | 0.045 | 0.331 | 0.655 |
+| plausible_biological_transition | 0.000 | 0.000 | 0.000 | 0.900 | 0.000 | 1.000 |
+| semantic_contradiction | 0.000 | 0.000 | 0.000 | 1.000 | 0.000 | 1.000 |
+| statistical_anomaly | 0.000 | 0.900 | 0.000 | 1.000 | 0.000 | 1.000 |
+
+## Executed detection rates by intervention family
 
 | corruption_class | schema | row | structural | temporal | spatial | provenance |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -62,7 +71,7 @@ Precision counts one matched detection per injected error, collapses redundant m
 | temporal_positive_growth | 0.000 | 0.900 | 0.000 | 1.000 | 0.000 | 1.000 |
 | temporal_year_swap | 0.000 | 0.000 | 1.000 | 0.800 | 0.000 | 0.000 |
 
-A corruption may be detected by several layers. Pairwise overlaps are in `corruption_benchmark_overlap.csv`; seed recall standard deviation is population standard deviation across the executed seeds. `data/benchmark/alerts.parquet` preserves each new alert and matching decision. Ground truth includes every changed cell/row, original values, affected history IDs, seed and scenario.
+An intervention may be detected by several layers. Pairwise overlaps are in `corruption_benchmark_overlap.csv`; seed recall standard deviation is population standard deviation across the executed seeds. `data/benchmark/alerts.parquet` preserves each new alert and matching decision. Ground truth includes every changed cell/row, original values, affected history IDs, seed and scenario.
 
 ## Interpretation
 
@@ -93,7 +102,9 @@ Context-only detections (both conventional baselines missed, at least one contex
 
 Synthetic scenarios show capabilities and blind spots under specified interventions; they do not estimate natural source-error frequency, identify true biological anomalies, or prove that one validator universally dominates. Statistical growth screening depends on eligible comparison pairs. Missing empirical spread or ineligible pairs may produce legitimate misses.
 
-Canonical values are corrupted while their stored provenance snapshots usually remain unchanged. Snapshot mismatch therefore measures cross-table consistency recovery, not whether the original source was scientifically correct. Coherent source/canonical/provenance corruption is outside this experiment.
+A detection is not automatically a source error. Height and arm decreases can be biologically real. Explicit dead/alive contradictions may reflect field classification, linkage or transcription. Synthetic interventions test detector capabilities, not ecological plausibility; temporal validators are screening tools. Context-aware validation detects not only malformed data, but also transitions whose interpretation depends on scientific context. Legacy corruption_id/corruption_class column names and benchmark corruption CLI syntax remain for compatibility; scenario_semantics identifies integrity interventions, semantic contradictions, plausible biological transitions and statistical anomalies.
+
+Canonical values are changed while their stored provenance snapshots usually remain unchanged. Snapshot mismatch therefore measures cross-table consistency recovery, not whether the original source was scientifically correct. For a simulated biological transition, a snapshot mismatch does not imply that the changed measurement is biologically invalid. Coherent alteration of source, canonical and provenance values is outside this experiment.
 
 The benchmark never alters `data/processed` or raw artifacts. `run.json` records source/configuration/implementation hashes. Hash equality of primary processed inputs was verified after execution.
 

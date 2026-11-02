@@ -184,6 +184,18 @@ async function showLineage(findingId=null) {
 }
 const shardCache = new Map();
 const hashKeys=['tab','program','year','q','rule','severity','mode','pairMeasure','pairInterval','summaryKind','representation','entity','fi'];
+state.findingCategory='';hashKeys.push('findingCategory');
+const categoryNames={integrity_violation:'Integrity violation',semantic_contradiction:'Semantic contradiction',biological_transition:'Biological transition',data_quality_warning:'Data quality warning',informational:'Informational'};
+function temporalComparison(item) {
+  const e=item.observed_value;
+  if(!item.rule_id.startsWith('TEMPORAL_')||!e?.previous_observation_id)return '';
+  const interpretation=item.finding_category==='biological_transition'?'This transition may reflect biological damage, measurement differences, identity problems or source error. It is not automatically invalid data.':item.finding_category==='semantic_contradiction'?'The recorded statuses conflict. Review classification, linkage and transcription; this does not establish which record is wrong.':item.rule_id==='TEMPORAL_MEASUREMENT_AFTER_DEATH'?'A standing dead cactus can still be measured. Positive height does not establish survival.':'Temporal screens identify context requiring review, not a confirmed source error.';
+  return `<div class="temporal-comparison">${['previous','current'].map(prefix=>{
+    const verify=e[prefix+'_verification_status']||'not_recorded';
+    const tags=['tag_only','off_plot','not_measured','needs_review'].filter(tag=>e[prefix+'_'+tag]);
+    return `<section><h4>${prefix==='previous'?'Previous':'Current'} observation · <button class="textbutton" data-entity="${esc(e[prefix+'_observation_id'])}">${esc(e[prefix+'_year'])}</button></h4><dl><dt>Height</dt><dd>${fmt(e[prefix+'_height_m'])} m${e[prefix+'_unit_source']==='inferred'?' · unit inferred':''}</dd><dt>Arms</dt><dd>${fmt(e[prefix+'_arm_count'])}</dd><dt>Status</dt><dd>${esc(e[prefix+'_status'])} · ${esc(e[prefix+'_status_source']||'unknown')}</dd><dt>Original notes</dt><dd class="source-note">${e[prefix+'_notes']?esc(e[prefix+'_notes']):'<em>(blank)</em>'}</dd><dt>Verify</dt><dd>${esc(verify)}${e[prefix+'_verification_raw']?' · source: '+esc(e[prefix+'_verification_raw']):''}${e[prefix+'_verification_time_basis']==='shared_source_row'?'<small>Shared source-row flag; survey timing undocumented.</small>':''}</dd><dt>Operational tags</dt><dd>${tags.length?tags.map(tag=>esc(tag)).join(', '):'None recognized'}</dd></dl></section>`;
+  }).join('')}</div><p class="interpretation"><strong>Interpretation:</strong> ${esc(interpretation)}</p>`;
+}
 state.mapBackground='topo';state.mapView='records';
 hashKeys.push('mapBackground','mapView');
 state.photoQ='';state.photoLicense='';state.pagePhotos=0;
@@ -192,6 +204,7 @@ hashKeys.push('photoQ','photoLicense');
 function readHash() {
   const params=new URLSearchParams(location.hash.slice(1));
   for (const key of hashKeys) if(params.has(key)) state[key]=params.get(key);
+  if(state.rule==='TEMPORAL_RESURRECTION')state.rule='TEMPORAL_STATUS_CONTRADICTION';
   if(!['overview','changes','records','summaries','findings','map','sources','photos'].includes(state.tab)) state.tab='overview';
   if(!['topo','relief','none'].includes(state.mapBackground))state.mapBackground='topo';
   if(!['records','region'].includes(state.mapView))state.mapView='records';
@@ -242,7 +255,8 @@ function render() {
   baseRecords=observations.filter(row=>recordMatches(row));
   baseFindings=findings.filter(findingMatches);
   visibleRecords=baseRecords.filter(recordMode);
-  visibleFindings=baseFindings.filter(row=>(!state.rule||row.rule_id===state.rule)&&(!state.severity||row.severity===state.severity));
+  visibleFindings=baseFindings.filter(row=>(!state.rule||row.rule_id===state.rule)&&(!state.severity||row.severity===state.severity)&&(!state.findingCategory||row.finding_category===state.findingCategory));
+  $('finding-category').value=state.findingCategory;
   for(const key of ['program','year','rule','severity']) $(key).value=state[key];
   $('search').value=state.q; $('record-mode').value=state.mode; $('measure').value=state.measure;
   document.querySelectorAll('.tabs [data-tab]').forEach(button=>button.setAttribute('aria-selected',String(button.dataset.tab===state.tab)));
@@ -365,7 +379,7 @@ function renderRecords() {
   pagination('records-pagination',visibleRecords,'pageObs');
 }
 function renderFindings() {
-  $('findings-table').innerHTML=visibleFindings.length?`<table><thead><tr><th>Severity</th><th>Rule / open evidence</th><th>Frame</th><th>Year</th><th>Plot</th><th>Field</th><th>Observed value</th></tr></thead><tbody>${pageRows(visibleFindings,'pageFind').map(row=>`<tr class="selectable" data-entity="${esc(row.entity_identifier)}" data-fi="${row.index}"><td>${badge(row.severity)}</td><td><button class="textbutton" data-entity="${esc(row.entity_identifier)}" data-fi="${row.index}">${esc(row.rule_id)}</button><br><span class="mono">${esc(row.entity_identifier.slice(0,12))}…</span></td><td>${esc(label(row.program_id))}</td><td>${row.survey_year??'undated'}</td><td>${esc(row.plot_id||'—')}</td><td>${esc(row.field)}</td><td class="mono">${esc(JSON.stringify(row.observed_value).slice(0,160))}</td></tr>`).join('')}</tbody></table>`:empty('No findings match these filters. Try clearing the rule or severity filter.');
+  $('findings-table').innerHTML=visibleFindings.length?`<table><thead><tr><th>Severity / category</th><th>Rule / open evidence</th><th>Frame</th><th>Year</th><th>Plot</th><th>Field</th><th>Observed value</th></tr></thead><tbody>${pageRows(visibleFindings,'pageFind').map(row=>`<tr class="selectable" data-entity="${esc(row.entity_identifier)}" data-fi="${row.index}"><td>${badge(row.severity)}<br>${badge(categoryNames[row.finding_category]||row.finding_category,row.finding_category)}</td><td><button class="textbutton" data-entity="${esc(row.entity_identifier)}" data-fi="${row.index}">${esc(row.rule_id)}</button><br><span class="mono">${esc(row.entity_identifier.slice(0,12))}…</span></td><td>${esc(label(row.program_id))}</td><td>${row.survey_year??'undated'}</td><td>${esc(row.plot_id||'—')}</td><td>${esc(row.field)}</td><td class="mono">${esc(JSON.stringify(row.observed_value).slice(0,160))}</td></tr>`).join('')}</tbody></table>`:empty('No findings match these filters. Try clearing the rule, category or severity filter.');
   pagination('findings-pagination',visibleFindings,'pageFind');
 }
 function summaryMatches(row) {
@@ -643,7 +657,7 @@ function renderDetail(detail) {
   let facts=isObservation?[
     ['Height',row.height_m==null?`— (${row.height_missing_reason||'missing'})`:`${fmt(row.height_m)} m${row.unit_source==='inferred'?' · unit inferred':''}`],
     ['Arm count',row.arm_count==null?`— (${row.arm_count_missing_reason||'missing'})`:fmt(row.arm_count)],
-    ['Status',`${row.status} · ${row.status_source}`],['Identity',row.organism_id?'Source-supported individual':(row.source_plot_id==='71G'?'Linkage withheld on 71G':'Unlinked observation')]
+    ['Status',`${row.status} · ${row.status_source}`],['Identity',row.organism_id?'Source-supported individual':(row.source_plot_id==='71G'?'Linkage withheld on 71G':'Unlinked observation')],['Verify (source-row flag)',row.verification_status||'not_recorded']
   ]:[['Layer / representation',row.layer||row.representation||'—'],['CRS',row.crs||'not documented'],['Source row / feature',fmt(row.source_row)],['Review findings',detail.findings.length]];
   if(detail.kind==='vegetation_observations') {
     $('detail-title').textContent=`Vegetation · ${row.plot_id} · ${row.survey_year} · ${row.species_raw}`;
@@ -656,7 +670,7 @@ function renderDetail(detail) {
   const ordered=selectedFinding?[selectedFinding,...detail.findings.filter(item=>item!==selectedFinding)]:detail.findings;
   const findingsHTML=ordered.map(item=>{
     const previous=item.observed_value?.previous||item.observed_value?.previous_observation_id;
-    return `<article class="finding-card ${esc(item.severity)} ${item===selectedFinding?'active':''}"><h3>${badge(item.severity)} ${esc(item.rule_id)} · ${badge(item.status)}</h3><p>${esc(item.message)}</p><p><strong>Expected:</strong> ${esc(item.expected_condition)}</p><pre>${esc(pretty(item.observed_value))}</pre><button data-lineage-finding="${esc(item.finding_id)}">Trace finding evidence</button>${previous?`<button class="textbutton" data-entity="${esc(previous)}">Open the prior observation →</button>`:''}</article>`;
+    return `<article class="finding-card ${esc(item.severity)} ${item===selectedFinding?'active':''}"><h3>${badge(item.severity)} ${badge(categoryNames[item.finding_category]||item.finding_category,item.finding_category)} ${esc(item.rule_id)} · ${badge(item.status)}</h3><p>${esc(item.message)}</p>${temporalComparison(item)}<p><strong>Expected:</strong> ${esc(item.expected_condition)}</p><details class="structured-evidence"><summary>Structured evidence JSON</summary><pre>${esc(pretty(item.observed_value))}</pre></details><button data-lineage-finding="${esc(item.finding_id)}">Trace finding evidence</button>${previous?`<button class="textbutton" data-entity="${esc(previous)}">Open the prior observation →</button>`:''}</article>`;
   }).join('')||'<p class="caption">No validation finding is recorded for this entity. This is not evidence that every possible check was applicable.</p>';
   const highlight=new Set(detail.transforms.filter(t=>!selectedFinding||selectedFinding.field.split(',').includes(t.field)).map(t=>t.source_column));
   const sourceField=selectedFinding?.field||'';
@@ -684,16 +698,17 @@ function attachEvents() {
   $('photo-search').oninput=event=>{state.photoQ=event.target.value;state.pagePhotos=0;renderPhotos();};
   $('photo-license').onchange=event=>{state.photoLicense=event.target.value;state.pagePhotos=0;renderPhotos();};
   $('export-photo-links').onclick=()=>csv(visiblePhotos,['observation_id','photo_id','observation_url','photo_page_url','image_url','license','attribution'],'saguarodata-photo-links.csv');
+  $('finding-category').onchange=event=>{state.findingCategory=event.target.value;state.pageFind=0;render();};
   $('program').onchange=event=>updateScope({program:event.target.value});
   $('year').onchange=event=>updateScope({year:event.target.value});
   let searchTimer;$('search').oninput=event=>{clearTimeout(searchTimer);const value=event.target.value;searchTimer=setTimeout(()=>updateScope({q:value}),180);};
-  $('reset').onclick=()=>{Object.assign(state,{program:'',year:'',q:'',rule:'',severity:'',mode:'all',sourceQ:'',summaryQ:'',pairInterval:'',representation:'RawData_1990_Total_Saguaros'});$('source-search').value='';$('summary-search').value='';updateScope({});};
-  $('share').onclick=copyLink;$('all-findings').onclick=()=>{state.rule='';state.severity='';setTab('findings');};
+  $('reset').onclick=()=>{Object.assign(state,{program:'',year:'',q:'',rule:'',severity:'',findingCategory:'',mode:'all',sourceQ:'',summaryQ:'',pairInterval:'',representation:'RawData_1990_Total_Saguaros'});$('source-search').value='';$('summary-search').value='';updateScope({});};
+  $('share').onclick=copyLink;$('all-findings').onclick=()=>{state.rule='';state.severity='';state.findingCategory='';setTab('findings');};
   $('coverage-field').onchange=event=>{state.coverageField=event.target.value;renderCoverage();};
   $('measure').onchange=event=>{state.measure=event.target.value;scatterBounds=null;drawScatter();};
   $('record-mode').onchange=event=>{state.mode=event.target.value;state.pageObs=0;scatterBounds=null;render();};
   for(const key of ['rule','severity'])$(key).onchange=event=>{state[key]=event.target.value;state.pageFind=0;render();};
-  $('clear-finding-filters').onclick=()=>{state.rule='';state.severity='';state.pageFind=0;render();};
+  $('clear-finding-filters').onclick=()=>{state.rule='';state.severity='';state.findingCategory='';state.pageFind=0;render();};
   $('export-records').onclick=()=>csv(visibleRecords,data.observation_columns,'saguarodata-observations.csv');
   $('export-findings').onclick=()=>csv(visibleFindings,data.finding_columns,'saguarodata-findings.csv');
   $('source-search').oninput=event=>{state.sourceQ=event.target.value;state.pageSource=0;renderSources();};
@@ -718,7 +733,7 @@ function attachEvents() {
     if(target.dataset.photoBrowse){$('detail').close();setTab('photos');return;}
     if(target.dataset.tab){if(target.dataset.summaryKind){state.summaryKind=target.dataset.summaryKind;state.representation='';state.pageSummary=0;}setTab(target.dataset.tab);return;}
     if(target.dataset.programPick){updateScope({program:state.program===target.dataset.programPick?'':target.dataset.programPick});return;}
-    if(target.dataset.rulePick){state.rule=target.dataset.rulePick;state.severity='';state.pageFind=0;setTab('findings');return;}
+    if(target.dataset.rulePick){state.rule=target.dataset.rulePick;state.severity='';state.findingCategory='';state.pageFind=0;setTab('findings');return;}
     if(target.dataset.cellProgram){Object.assign(state,{program:target.dataset.cellProgram,year:target.dataset.cellYear,tab:'records',mode:'all',measure:state.coverageField});updateScope({});return;}
     if(target.dataset.sort){state.direction=state.sort===target.dataset.sort?-state.direction:1;state.sort=target.dataset.sort;state.pageObs=0;renderRecords();return;}
     if(target.dataset.pageKey){state[target.dataset.pageKey]+=Number(target.dataset.pageDelta);if(state.tab==='sources')renderSources();else if(state.tab==='findings')renderFindings();else if(state.tab==='changes')renderPairs();else if(state.tab==='summaries')renderSummaries();else if(state.tab==='photos')renderPhotos();else renderRecords();return;}

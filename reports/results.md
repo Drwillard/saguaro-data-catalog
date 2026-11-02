@@ -38,6 +38,49 @@
     "TEMPORAL_REOBSERVED": 3,
     "INVALID_OR_NULL_GEOMETRY": 1
   },
+  "findings_by_category": {
+    "integrity_violation": 9467,
+    "semantic_contradiction": 0,
+    "biological_transition": 320,
+    "data_quality_warning": 6228,
+    "informational": 1693
+  },
+  "temporal_interpretation": {
+    "temporal_findings": 502,
+    "findings_by_category": {
+      "integrity_violation": 9467,
+      "semantic_contradiction": 0,
+      "biological_transition": 320,
+      "data_quality_warning": 6228,
+      "informational": 1693
+    },
+    "context_totals": {
+      "has_any_note": 435,
+      "has_explicit_alive_dead_note": 320,
+      "has_explicit_status_note": 332,
+      "has_review_annotation": 0,
+      "has_tag_only_or_off_plot": 0,
+      "has_not_measured_annotation": 0,
+      "has_verify_status": 502,
+      "verify_yes": 409,
+      "verify_no": 79,
+      "verify_not_found": 14
+    },
+    "real_status_contradictions": 0,
+    "cases": {
+      "L130": [
+        "e3770fc78729a3b8520c5cb2",
+        "58f020371babd818c05cb635",
+        "1a66538c24e81ae87d754da5"
+      ],
+      "L167": [
+        "7b73142ad26964c59b772cd7",
+        "2b5ded29b7b4e5aec8a28645",
+        "8b997c50962a63933437451a",
+        "cff6f41d0157a359f1238936"
+      ]
+    }
+  },
   "coverage": {
     "linked_organisms": 3169,
     "unlinked_observations": 54043,
@@ -65,13 +108,13 @@
 
 ## Ten illustrative examples
 
-1. **TEMPORAL_MEASUREMENT_AFTER_DEATH**, `8b997c50962a63933437451a`: {"previous": "2b5ded29b7b4e5aec8a28645", "height": 3.4}. A standing dead cactus can be measured; positive height does not establish resurrection. Source: `{"source_dataset": "historic_plots", "source_file": "data/raw/historic_plots/6f62e764accb75e61b8b4d0b69c4d42d90fb91c197d85f5ae0f42c5bf9236a3a/Steenbergh&Lowe_HistoricSaguaroPlotSurvey.xls", "source_sheet": "Sheet1", "source_row": 2969, "source_reference_id": "2225187", "source_sha256": "6f62e764accb75e61b8b4d0b69c4d42d90fb91c197d85f5ae0f42c5bf9236a3a", "source_row_id": "25bcf04bcfcaf22c058739f5"}`
+1. **TEMPORAL_MEASUREMENT_AFTER_DEATH**, `8b997c50962a63933437451a`: {"previous": "2b5ded29b7b4e5aec8a28645", "previous_observation_id": "2b5ded29b7b4e5aec8a28645", "current_observation_id": "8b997c50962a63933437451a", "previous_year": 2001, "current_year": 2010, "previous_height_m": 0.0, "previous_arm_count": null, "previous_unit_source": "inferred", "previous_height_normalization_unit": "m", "previous_status": "dead", "previous_status_raw": "dead", "previous_status_source": "explicit_note", "previous_notes": "dead", "previous_verification_status": "yes", "previous_verification_raw": "Yes", "previous_verification_time_basis": "shared_source_row", "previous_tag_only": false, "previous_off_plot": false, "previous_not_measured": false, "previous_needs_review": false, "current_height_m": 3.4, "current_arm_count": 0.0, "current_unit_source": "inferred", "current_height_normalization_unit": "m", "current_status": "unknown", "current_status_raw": "", "current_status_source": "unknown", "current_notes": "", "current_verification_status": "yes", "current_verification_raw": "Yes", "current_verification_time_basis": "shared_source_row", "current_tag_only": false, "current_off_plot": false, "current_not_measured": false, "current_needs_review": false, "height": 3.4}. A standing dead cactus can still be measured. A later positive height does not establish survival; review status and measurement semantics. Source: `{"source_dataset": "historic_plots", "source_file": "data/raw/historic_plots/6f62e764accb75e61b8b4d0b69c4d42d90fb91c197d85f5ae0f42c5bf9236a3a/Steenbergh&Lowe_HistoricSaguaroPlotSurvey.xls", "source_sheet": "Sheet1", "source_row": 2969, "source_reference_id": "2225187", "source_sha256": "6f62e764accb75e61b8b4d0b69c4d42d90fb91c197d85f5ae0f42c5bf9236a3a", "source_row_id": "25bcf04bcfcaf22c058739f5"}`
 
-2. **TEMPORAL_SHRINKAGE**, `58f020371babd818c05cb635`: {"previous": "e3770fc78729a3b8520c5cb2", "height_before": 7.455, "height_after": 1.55, "elapsed_years": 26}. Possible broken top, measurement change, unit issue, transcription error or mislinkage. Source: `{"source_dataset": "historic_plots", "source_file": "data/raw/historic_plots/6f62e764accb75e61b8b4d0b69c4d42d90fb91c197d85f5ae0f42c5bf9236a3a/Steenbergh&Lowe_HistoricSaguaroPlotSurvey.xls", "source_sheet": "Sheet1", "source_row": 2928, "source_reference_id": "2225187", "source_sha256": "6f62e764accb75e61b8b4d0b69c4d42d90fb91c197d85f5ae0f42c5bf9236a3a", "source_row_id": "227cf80f0dc047b11610d301"}`
+2. **TEMPORAL_SHRINKAGE**, `58f020371babd818c05cb635`: {"previous": "e3770fc78729a3b8520c5cb2", "previous_observation_id": "e3770fc78729a3b8520c5cb2", "current_observation_id": "58f020371babd818c05cb635", "previous_year": 1975, "current_year": 2001, "previous_height_m": 7.455, "previous_arm_count": 6.0, "previous_unit_source": "inferred", "previous_height_normalization_unit": "m", "previous_status": "unknown", "previous_status_raw": "fairtop thin", "previous_status_source": "unknown", "previous_notes": "fairtop thin", "previous_verification_status": "no", "previous_verification_raw": "No", "previous_verification_time_basis": "shared_source_row", "previous_tag_only": false, "previous_off_plot": false, "previous_not_measured": false, "previous_needs_review": false, "current_height_m": 1.55, "current_arm_count": 0.0, "current_unit_source": "inferred", "current_height_normalization_unit": "m", "current_status": "alive", "current_status_raw": "live", "current_status_source": "explicit_note", "current_notes": "live", "current_verification_status": "no", "current_verification_raw": "No", "current_verification_time_basis": "shared_source_row", "current_tag_only": false, "current_off_plot": false, "current_not_measured": false, "current_needs_review": false, "height_before": 7.455, "height_after": 1.55, "elapsed_years": 26}. Large height decrease detected. Possible explanations include top/stem breakage, measurement differences, source-unit problems, transcription error, or identity mismatch. Source: `{"source_dataset": "historic_plots", "source_file": "data/raw/historic_plots/6f62e764accb75e61b8b4d0b69c4d42d90fb91c197d85f5ae0f42c5bf9236a3a/Steenbergh&Lowe_HistoricSaguaroPlotSurvey.xls", "source_sheet": "Sheet1", "source_row": 2928, "source_reference_id": "2225187", "source_sha256": "6f62e764accb75e61b8b4d0b69c4d42d90fb91c197d85f5ae0f42c5bf9236a3a", "source_row_id": "227cf80f0dc047b11610d301"}`
 
-3. **TEMPORAL_GROWTH_OUTLIER**, `19b48e28e80bc68afa3c25ad`: {"previous": "b1ad67f68ca13719afe199de", "annual_growth_m": 0.5, "empirical_upper": 0.46202666666666686, "median": 0.06666666666666672, "robust_spread": 0.06589333333333336, "n": 612}. Statistical screening only; no biological maximum asserted. Source: `{"source_dataset": "historic_plots", "source_file": "data/raw/historic_plots/6f62e764accb75e61b8b4d0b69c4d42d90fb91c197d85f5ae0f42c5bf9236a3a/Steenbergh&Lowe_HistoricSaguaroPlotSurvey.xls", "source_sheet": "Sheet1", "source_row": 3091, "source_reference_id": "2225187", "source_sha256": "6f62e764accb75e61b8b4d0b69c4d42d90fb91c197d85f5ae0f42c5bf9236a3a", "source_row_id": "afbbd0cd3f80ad308f101bac"}`
+3. **TEMPORAL_GROWTH_OUTLIER**, `19b48e28e80bc68afa3c25ad`: {"previous": "b1ad67f68ca13719afe199de", "previous_observation_id": "b1ad67f68ca13719afe199de", "current_observation_id": "19b48e28e80bc68afa3c25ad", "previous_year": 2001, "current_year": 2010, "previous_height_m": 3.0, "previous_arm_count": 0.0, "previous_unit_source": "inferred", "previous_height_normalization_unit": "m", "previous_status": "alive", "previous_status_raw": "live", "previous_status_source": "explicit_note", "previous_notes": "live", "previous_verification_status": "yes", "previous_verification_raw": "Yes", "previous_verification_time_basis": "shared_source_row", "previous_tag_only": false, "previous_off_plot": false, "previous_not_measured": false, "previous_needs_review": false, "current_height_m": 7.5, "current_arm_count": 0.0, "current_unit_source": "inferred", "current_height_normalization_unit": "m", "current_status": "unknown", "current_status_raw": "", "current_status_source": "unknown", "current_notes": "", "current_verification_status": "yes", "current_verification_raw": "Yes", "current_verification_time_basis": "shared_source_row", "current_tag_only": false, "current_off_plot": false, "current_not_measured": false, "current_needs_review": false, "annual_growth_m": 0.5, "empirical_upper": 0.46202666666666686, "median": 0.06666666666666672, "robust_spread": 0.06589333333333336, "n": 612}. Statistical screening only; no biological maximum asserted. Source: `{"source_dataset": "historic_plots", "source_file": "data/raw/historic_plots/6f62e764accb75e61b8b4d0b69c4d42d90fb91c197d85f5ae0f42c5bf9236a3a/Steenbergh&Lowe_HistoricSaguaroPlotSurvey.xls", "source_sheet": "Sheet1", "source_row": 3091, "source_reference_id": "2225187", "source_sha256": "6f62e764accb75e61b8b4d0b69c4d42d90fb91c197d85f5ae0f42c5bf9236a3a", "source_row_id": "afbbd0cd3f80ad308f101bac"}`
 
-4. **TEMPORAL_ARM_DECREASE**, `58f020371babd818c05cb635`: {"previous": "e3770fc78729a3b8520c5cb2", "arms_before": 6.0, "arms_after": 0.0}. Arms can break; a decrease is a warning, not proof of source error. Source: `{"source_dataset": "historic_plots", "source_file": "data/raw/historic_plots/6f62e764accb75e61b8b4d0b69c4d42d90fb91c197d85f5ae0f42c5bf9236a3a/Steenbergh&Lowe_HistoricSaguaroPlotSurvey.xls", "source_sheet": "Sheet1", "source_row": 2928, "source_reference_id": "2225187", "source_sha256": "6f62e764accb75e61b8b4d0b69c4d42d90fb91c197d85f5ae0f42c5bf9236a3a", "source_row_id": "227cf80f0dc047b11610d301"}`
+4. **TEMPORAL_ARM_DECREASE**, `58f020371babd818c05cb635`: {"previous": "e3770fc78729a3b8520c5cb2", "previous_observation_id": "e3770fc78729a3b8520c5cb2", "current_observation_id": "58f020371babd818c05cb635", "previous_year": 1975, "current_year": 2001, "previous_height_m": 7.455, "previous_arm_count": 6.0, "previous_unit_source": "inferred", "previous_height_normalization_unit": "m", "previous_status": "unknown", "previous_status_raw": "fairtop thin", "previous_status_source": "unknown", "previous_notes": "fairtop thin", "previous_verification_status": "no", "previous_verification_raw": "No", "previous_verification_time_basis": "shared_source_row", "previous_tag_only": false, "previous_off_plot": false, "previous_not_measured": false, "previous_needs_review": false, "current_height_m": 1.55, "current_arm_count": 0.0, "current_unit_source": "inferred", "current_height_normalization_unit": "m", "current_status": "alive", "current_status_raw": "live", "current_status_source": "explicit_note", "current_notes": "live", "current_verification_status": "no", "current_verification_raw": "No", "current_verification_time_basis": "shared_source_row", "current_tag_only": false, "current_off_plot": false, "current_not_measured": false, "current_needs_review": false, "arms_before": 6.0, "arms_after": 0.0}. Arm count decreased between surveys. Saguaros can lose arms through breakage or damage; review source notes and measurements before interpreting this as an error. Source: `{"source_dataset": "historic_plots", "source_file": "data/raw/historic_plots/6f62e764accb75e61b8b4d0b69c4d42d90fb91c197d85f5ae0f42c5bf9236a3a/Steenbergh&Lowe_HistoricSaguaroPlotSurvey.xls", "source_sheet": "Sheet1", "source_row": 2928, "source_reference_id": "2225187", "source_sha256": "6f62e764accb75e61b8b4d0b69c4d42d90fb91c197d85f5ae0f42c5bf9236a3a", "source_row_id": "227cf80f0dc047b11610d301"}`
 
 5. **OUTSIDE_ASSIGNED_PLOT**, `d8fe96e39935fcd0ceb28077`: [-110.72837799498066, 32.214981760455146]. Boundary/GPS differences or plot assignment require review. Source: `{"source_dataset": "historic_plots", "source_file": "data/raw/historic_plots/6f62e764accb75e61b8b4d0b69c4d42d90fb91c197d85f5ae0f42c5bf9236a3a/Steenbergh&Lowe_HistoricSaguaroPlotSurvey.xls", "source_sheet": "Sheet1", "source_row": 74, "source_reference_id": "2225187", "source_sha256": "6f62e764accb75e61b8b4d0b69c4d42d90fb91c197d85f5ae0f42c5bf9236a3a", "source_row_id": "2730b441b2dbc078bdea9a47"}`
 

@@ -1,4 +1,4 @@
-"""Independent one-corruption trials on an immutable canonical-data cohort."""
+"""Independent synthetic intervention trials on an immutable canonical cohort."""
 from pathlib import Path
 import json
 import math
@@ -53,6 +53,7 @@ def schema_checks(tables):
         if column not in frame:emit('SCHEMA_MISSING_COLUMN',{'observation_id':'__table__'},column,None)
     required=('observation_id','program_id','survey_event_id','survey_year','source_row_id','source_sha256','source_row','source_sheet')
     numerics=('survey_year','nominal_round','source_row','height_m','arm_count','x','y','latitude','longitude')
+    booleans=('tag_only','off_plot','not_measured','needs_review')
     for row in frame.to_dict('records'):
         context=dict(row)
         if pd.isna(context.get('observation_id')):context['observation_id']=row.get('source_row_id')
@@ -63,6 +64,9 @@ def schema_checks(tables):
             if pd.notna(value) and (not isinstance(value,numbers.Real) or isinstance(value,(bool,np.bool_))):emit('SCHEMA_NUMERIC_TYPE',context,field,value)
         for field in frame:
             value=row.get(field)
+            if field in booleans:
+                if pd.notna(value) and not isinstance(value,(bool,np.bool_)):emit('SCHEMA_BOOLEAN_TYPE',context,field,value)
+                continue
             if field in numerics or pd.isna(value):continue
             if field in OBSERVATION_COLUMNS and not isinstance(value,str):emit('SCHEMA_TEXT_TYPE',context,field,value)
         if row.get('status') not in ('unknown','alive','dead','not_found'):emit('SCHEMA_STATUS_ENUM',context,'status',row.get('status'))
@@ -117,13 +121,18 @@ def validate_layers(tables,config):
 def write_report(root):
     root=Path(root);folder=root/'data/benchmark'
     result=pd.read_parquet(folder/'results.parquet');summary=summarize(result)
+    if 'scenario_semantics' not in result:
+        from .scenarios import scenario_semantics
+        result['scenario_semantics']=result.scenario.map(scenario_semantics)
     matrix=result.groupby(['scenario','layer']).detected.mean().unstack().reindex(columns=LAYERS).fillna(0)
     classes=result.groupby(['corruption_class','layer']).detected.mean().unstack().reindex(columns=LAYERS).fillna(0)
+    semantics=result.groupby(['scenario_semantics','layer']).detected.mean().unstack().reindex(columns=LAYERS).fillna(0)
     overview=json.loads((folder/'run.json').read_text())
     reports=root/'reports';reports.mkdir(exist_ok=True)
     summary.to_csv(reports/'corruption_benchmark.csv',index=False)
     matrix.to_csv(reports/'corruption_benchmark_by_scenario.csv')
     classes.to_csv(reports/'corruption_benchmark_by_class.csv')
+    semantics.to_csv(reports/'corruption_benchmark_by_semantics.csv')
     if 'intensity' in result:
         intensity_rows=[]
         for intensity,group in result.groupby('intensity'):
@@ -135,13 +144,14 @@ def write_report(root):
         for row in frame.to_dict('records'):lines.append('| '+' | '.join(f'{row[c]:.3f}' if isinstance(row[c],float) else str(row[c]) for c in columns)+' |')
         return '\n'.join(lines)
     runs=overview.get('runs',[dict(seeds=overview['seeds'],count=overview['count'],intensity=1.)])
-    lines=['# Synthetic corruption benchmark','',f"Executed runs: {json.dumps(runs)}. Canonical cohort: {overview['cohort_observations']} observations; {overview['cohort_features']} spatial features. Complete selected organism histories and all plot context are retained. This is a deterministic cohort experiment on real canonical records, not a whole-corpus prevalence estimate.",'',
-        'Each trial starts from the same unchanged cohort and injects one corruption. All six layers run independently. Strict schema types/nullability/enums and conventional scalar ranges (height 0–30 m, arms 0–200, geographic ranges), integer counts, primary/composite keys and exact row duplicates form the baselines. The structural/spatial layers include the existing checks plus explicit identity/event/unit and CRS/geometry cross-checks added in this extension. Provenance checks are a separate integrity layer.','',
-        f"Completed injections: {len(result)//len(LAYERS)}; ineligible trials: {len(overview['skipped'])}. Skips are not detections or misses. Validator failures are misses and are counted separately.",'',table(summary),'',
-        'Precision counts one matched detection per injected error, collapses redundant matching alerts, and treats newly emitted alerts outside the recorded affected rows/histories as operational false positives. Alert precision additionally reports matched alerts / all new alerts. Recall is detected injected corruptions / completed corruptions. F1 uses the event precision and injection recall. Baseline signatures are subtracted; pre-existing scientific findings are neither scored as successes nor declared source errors. Unmatched new alerts can be secondary real effects of the injection rather than scientifically false claims.','',
-        '## Executed detection rates by corruption class','',table(classes.reset_index()),'',
+    lines=['# Synthetic intervention benchmark','',f"Executed runs: {json.dumps(runs)}. Canonical cohort: {overview['cohort_observations']} observations; {overview['cohort_features']} spatial features. Complete selected organism histories and all plot context are retained. This is a deterministic cohort experiment on real canonical records, not a whole-corpus prevalence estimate.",'',
+        'Each trial starts from the same unchanged cohort and applies one synthetic intervention. All six layers run independently. Strict schema types/nullability/enums and conventional scalar ranges (height 0–30 m, arms 0–200, geographic ranges), integer counts, primary/composite keys and exact row duplicates form the baselines. The structural/spatial layers include the existing checks plus explicit identity/event/unit and CRS/geometry cross-checks added in this extension. Provenance checks are a separate integrity layer.','',
+        f"Completed synthetic interventions: {len(result)//len(LAYERS)}; ineligible trials: {len(overview['skipped'])}. Skips are not detections or misses. Validator failures are misses and are counted separately.",'',table(summary),'',
+        'Precision counts one matched detection per intervention, collapses redundant matching alerts, and treats newly emitted alerts outside the recorded affected rows/histories as operational false positives. Alert precision additionally reports matched alerts / all new alerts. Recall is detected interventions / completed interventions. F1 uses the event precision and injection recall. Baseline signatures are subtracted; pre-existing scientific findings are neither scored as successes nor declared source errors. Unmatched new alerts can be secondary real effects of the injection rather than scientifically false claims.','',
+        '## Executed detection rates by intervention semantics','',table(semantics.reset_index()),'',
+        '## Executed detection rates by intervention family','',table(classes.reset_index()),'',
         '## Executed detection rates by scenario','',table(matrix.reset_index()),'',
-        'A corruption may be detected by several layers. Pairwise overlaps are in `corruption_benchmark_overlap.csv`; seed recall standard deviation is population standard deviation across the executed seeds. `data/benchmark/alerts.parquet` preserves each new alert and matching decision. Ground truth includes every changed cell/row, original values, affected history IDs, seed and scenario.','',
+        'An intervention may be detected by several layers. Pairwise overlaps are in `corruption_benchmark_overlap.csv`; seed recall standard deviation is population standard deviation across the executed seeds. `data/benchmark/alerts.parquet` preserves each new alert and matching decision. Ground truth includes every changed cell/row, original values, affected history IDs, seed and scenario.','',
         '## Interpretation','',
         'Context-only detections (both conventional baselines missed, at least one contextual layer detected):', '']
     pivot=result.pivot(index='corruption_id',columns='layer',values='detected')
@@ -154,7 +164,8 @@ def write_report(root):
     examples=result[result.corruption_id.isin(ids)].scenario.value_counts().index.tolist()
     lines.extend('- `'+scenario+'`' for scenario in examples)
     lines+=['','Synthetic scenarios show capabilities and blind spots under specified interventions; they do not estimate natural source-error frequency, identify true biological anomalies, or prove that one validator universally dominates. Statistical growth screening depends on eligible comparison pairs. Missing empirical spread or ineligible pairs may produce legitimate misses.','',
-        'Canonical values are corrupted while their stored provenance snapshots usually remain unchanged. Snapshot mismatch therefore measures cross-table consistency recovery, not whether the original source was scientifically correct. Coherent source/canonical/provenance corruption is outside this experiment.','',
+        'A detection is not automatically a source error. Height and arm decreases can be biologically real. Explicit dead/alive contradictions may reflect field classification, linkage or transcription. Synthetic interventions test detector capabilities, not ecological plausibility; temporal validators are screening tools. Context-aware validation detects not only malformed data, but also transitions whose interpretation depends on scientific context. Legacy corruption_id/corruption_class column names and benchmark corruption CLI syntax remain for compatibility; scenario_semantics identifies integrity interventions, semantic contradictions, plausible biological transitions and statistical anomalies.','',
+        'Canonical values are changed while their stored provenance snapshots usually remain unchanged. Snapshot mismatch therefore measures cross-table consistency recovery, not whether the original source was scientifically correct. For a simulated biological transition, a snapshot mismatch does not imply that the changed measurement is biologically invalid. Coherent alteration of source, canonical and provenance values is outside this experiment.','',
         'The benchmark never alters `data/processed` or raw artifacts. `run.json` records source/configuration/implementation hashes. Hash equality of primary processed inputs was verified after execution.']
     if 'informational_crs_detection' in result:
         informative=result[result.layer.eq('spatial')]

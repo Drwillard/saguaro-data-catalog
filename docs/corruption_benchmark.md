@@ -1,4 +1,4 @@
-# Synthetic corruption benchmark
+# Synthetic intervention benchmark
 
 Ordinary scalar validity cannot establish whether a plausible measurement belongs
 to the right organism, follows a death record, lies in its assigned plot, or
@@ -18,7 +18,7 @@ saguarodata benchmark report
 ```
 
 The second and third commands reproduce the executed multi-seed/magnitude experiment. `--count` controls
-the number of independently injected errors per seed; changing it changes
+the number of independent interventions per seed; changing it changes
 experimental replication, not the fraction of simultaneously damaged
 rows in a single dataset. Each trial starts again from the same baseline and
 injects one scenario. This deliberately avoids interactions between a dropped
@@ -68,6 +68,19 @@ the supported history affected by them. The ground truth preserves before/after
 values, fields, scenario ID, seed and deterministic corruption ID. No injector
 changes raw artifacts to manufacture a source error.
 
+## Intervention semantics
+
+Each configuration entry, ground-truth row and result row carries `scenario_semantics` independently of its legacy implementation family:
+
+| scenario_semantics | Scenarios |
+|---|---|
+| plausible_biological_transition | temporal_height_decrease, temporal_arm_collapse |
+| semantic_contradiction | temporal_dead_to_alive |
+| statistical_anomaly | temporal_positive_growth |
+| integrity_violation | Other schema, key, scalar, identity, spatial-reference and provenance interventions |
+
+The by-semantics detection matrix is exported as `corruption_benchmark_by_semantics.csv`. A height or arm decrease is not intrinsically an error. Those trials ask whether a transition is screened, not whether biology is invalid. Most simulated changes retain the original provenance snapshot, so provenance recovery for a biological transition means stored evidence is inconsistent with the changed canonical value; it does not establish that the changed value is biologically impossible. The legacy `benchmark corruption` CLI and `corruption_id`/`corruption_class` fields remain supported for reproducibility.
+
 ## Validation layers
 
 1. **Schema:** required columns, strict numeric/text types on declared fields,
@@ -99,7 +112,7 @@ misses, not as successful validation failures.
 ## Scoring
 
 For each layer, run the unchanged cohort once, then subtract its existing warning
-and error signatures from each corrupted trial. Informational collection notes
+and error signatures from each intervention trial. Informational collection notes
 are not error detections. Signatures use source-row/event anchors so removing a
 canonical key or changing lineage metadata cannot turn the same old scientific
 warning into a claimed new detection. Numerically equivalent JSON values are
@@ -147,7 +160,7 @@ these checks.
 Ignored `data/benchmark/` contains ground truth, per-layer results, new alerts and
 matching decisions, plus input/configuration/implementation hashes and skip logs.
 The run checks the SHA-256 of every normal processed Parquet before and after.
-`reports/corruption_benchmark.md` and its summary, scenario, class, group and
+`reports/corruption_benchmark.md` and its summary, scenario, semantics, class, group and
 overlap CSV companions are small reviewable artifacts. Tables come from executed
 results. Running the command again replaces the current benchmark output; archive
 the folder externally to retain a prior experiment. Seed recall variation is

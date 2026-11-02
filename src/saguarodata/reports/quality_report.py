@@ -12,10 +12,12 @@ def report(root='.'):
     obs=ds.observations()
     findings=ds.validation_findings()
     counts=obs.groupby('program_id').size().rename('observations').reset_index()
-    kinds=findings.groupby(['rule_id','severity']).size().rename('findings').reset_index()
+    kinds=findings.groupby(['rule_id','finding_category','severity']).size().rename('findings').reset_index()
+    from .temporal_interpretation import temporal_report
+    interpretation=temporal_report(root,ds)
     missing=obs.groupby(['program_id','survey_year']).agg(records=('observation_id','size'),height_null=('height_m',lambda s:int(s.isna().sum())),arms_null=('arm_count',lambda s:int(s.isna().sum()))).reset_index()
     reasons=obs.groupby(['program_id','survey_year','height_missing_reason'],dropna=False).size().rename('records').reset_index()
-    priority=['TEMPORAL_RESURRECTION','TEMPORAL_MEASUREMENT_AFTER_DEATH','TEMPORAL_SHRINKAGE','TEMPORAL_GROWTH_OUTLIER','TEMPORAL_ARM_DECREASE','OUTSIDE_ASSIGNED_PLOT','DUPLICATE_LOCAL_SOURCE_ID','DUPLICATE_COORDINATES','NONINTEGER_ARM_COUNT','INVALID_NUMERIC','AMBIGUOUS_ZERO_HEIGHT','INVALID_OR_NULL_GEOMETRY','UNKNOWN_SPATIAL_CRS']
+    priority=['TEMPORAL_STATUS_CONTRADICTION','TEMPORAL_MEASUREMENT_AFTER_DEATH','TEMPORAL_SHRINKAGE','TEMPORAL_GROWTH_OUTLIER','TEMPORAL_ARM_DECREASE','OUTSIDE_ASSIGNED_PLOT','DUPLICATE_LOCAL_SOURCE_ID','DUPLICATE_COORDINATES','NONINTEGER_ARM_COUNT','INVALID_NUMERIC','AMBIGUOUS_ZERO_HEIGHT','INVALID_OR_NULL_GEOMETRY','UNKNOWN_SPATIAL_CRS']
     examples=[]
     for rule in priority:
         subset=findings[findings.rule_id.eq(rule)]
@@ -88,7 +90,8 @@ def report(root='.'):
     summary=dict(records_by_program=counts.set_index('program_id').observations.to_dict(),
         aggregate_records_by_representation=aggregates.groupby('representation').size().to_dict(),
         vegetation_records_by_year=plants.groupby('survey_year').size().to_dict(), validation_findings=len(findings),
-        findings_by_rule=findings.rule_id.value_counts().to_dict(),coverage=coverage,limitations=limitations,examples=examples)
+        findings_by_rule=findings.rule_id.value_counts().to_dict(),findings_by_category=interpretation['findings_by_category'],
+        temporal_interpretation=interpretation,coverage=coverage,limitations=limitations,examples=examples)
     (out/'results.json').write_text(dumps(summary,indent=2,default=str),encoding='utf8')
     markdown='# Build results\n\n```json\n'+dumps({k:v for k,v in summary.items() if k!='examples'},indent=2,default=str)+'\n```\n\n## Ten illustrative examples\n\n'
     for i,item in enumerate(examples,1):

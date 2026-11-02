@@ -193,6 +193,10 @@ def build(root='.'):
                 source_column='UTM_X_83,UTM_Y_83' if row['program_id']=='historic_plots' else 'x_coord,y_coord',
                 source_value=json.dumps([row['x'],row['y']]), normalized_value=json.dumps([row['longitude'],row['latitude']]),
                 transformation='pyproj EPSG:26912 -> EPSG:4326 always_xy', value_kind='normalized'))
+        if isinstance(row.get('verification_source_column'),str) and row['verification_source_column']:
+            provenance.append(dict(**source,observation_id=row['observation_id'],table='organism_observations',field='verification_status',
+                source_column=row['verification_source_column'],source_value=row['verification_raw'],normalized_value=row['verification_status'],
+                transformation='normalize_verify_literal_v1',value_kind='normalized'))
     for row in plants:
         source={k:v for k,v in row.items() if k.startswith('source_')}
         for field,column,raw,value,transform in [('count','Stems' if row['survey_year']==2010 else 'Count',row['count_raw'],row['count'],'parse_numeric_without_zero_fill'),('cover_normalized','% Cover' if row['survey_year']==2010 else 'Cover',row['cover_raw'],None,'withheld_pending_unit_evidence')]:

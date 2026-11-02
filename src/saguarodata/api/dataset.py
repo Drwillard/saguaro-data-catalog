@@ -29,9 +29,14 @@ class Dataset:
             raise ValueError('A source-supported organism_id is required')
         return self.observations().loc[lambda x:x.organism_id.eq(organism_id)].sort_values('survey_year').reset_index(drop=True)
 
-    def validation_findings(self, severity=None):
+    def validation_findings(self, severity=None,finding_category=None,rule_id=None):
         frame = self.table('validation_findings')
-        return frame if severity is None else frame[frame.severity.eq(severity)].reset_index(drop=True)
+        from ..validation.rules import RULE_ALIASES,finding_category as category_for_rule
+        if 'finding_category' not in frame:frame['finding_category']=[category_for_rule(r.rule_id,r.severity) for r in frame.itertuples()]
+        if severity is not None:frame=frame[frame.severity.eq(severity)]
+        if finding_category is not None:frame=frame[frame.finding_category.eq(finding_category)]
+        if rule_id is not None:frame=frame[frame.rule_id.replace(RULE_ALIASES).eq(RULE_ALIASES.get(rule_id,rule_id))]
+        return frame.reset_index(drop=True)
 
     def provenance(self, observation_id, table='organism_observations'):
         aliases = {'organism_observation':'organism_observations'}

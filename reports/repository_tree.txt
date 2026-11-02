@@ -17,6 +17,8 @@ data/benchmark/run.json
 data/interim/<discovery pages, report text, extracted spatial layers>
 data/lineage/cli_height_trace.json
 data/lineage/cli_temporal_trace.json
+data/lineage/csv_export/edges.csv
+data/lineage/csv_export/nodes.csv
 data/lineage/edges.parquet
 data/lineage/example_temporal_trace.json
 data/lineage/lineage.sqlite
@@ -65,6 +67,7 @@ reports/corruption_benchmark.md
 reports/corruption_benchmark_by_class.csv
 reports/corruption_benchmark_by_intensity.csv
 reports/corruption_benchmark_by_scenario.csv
+reports/corruption_benchmark_by_semantics.csv
 reports/corruption_benchmark_groups.csv
 reports/corruption_benchmark_overlap.csv
 reports/data_quality_report.html
@@ -75,6 +78,10 @@ reports/repository_tree.txt
 reports/results.json
 reports/results.md
 reports/source_inventory.md
+reports/temporal_interpretation.csv
+reports/temporal_interpretation.json
+reports/temporal_interpretation.md
+reports/temporal_interpretation_by_rule.csv
 requirements-lock.txt
 scripts/acquire.py
 scripts/bootstrap_wheels.py
@@ -117,6 +124,7 @@ src/saguarodata/lineage/trace.py
 src/saguarodata/model/__init__.py
 src/saguarodata/model/canonical.py
 src/saguarodata/normalize/__init__.py
+src/saguarodata/normalize/annotations.py
 src/saguarodata/normalize/identifiers.py
 src/saguarodata/normalize/missing.py
 src/saguarodata/normalize/units.py
@@ -131,6 +139,7 @@ src/saguarodata/reports/assets/map_topo.jpg
 src/saguarodata/reports/assets/photo_links.json
 src/saguarodata/reports/explorer.py
 src/saguarodata/reports/quality_report.py
+src/saguarodata/reports/temporal_interpretation.py
 src/saguarodata/schema_history.py
 src/saguarodata/validation/__init__.py
 src/saguarodata/validation/context.py
@@ -143,9 +152,11 @@ src/saguarodata/validation/temporal.py
 tests/benchmark/test_benchmark.py
 tests/conftest.py
 tests/integration/test_pipeline.py
+tests/integration/test_temporal_interpretation.py
 tests/lineage/test_lineage.py
 tests/unit/test_acquisition.py
 tests/unit/test_explorer.py
 tests/unit/test_json.py
 tests/unit/test_normalization.py
+tests/unit/test_temporal_semantics.py
 tests/unit/test_validation.py

@@ -56,7 +56,7 @@ def test_baseline_subtraction_uses_source_anchor():
 @pytest.mark.parametrize('scenario,layer,rule',[
     ('row_negative_height','row','ROW_RANGE'),
     ('schema_numeric_string','schema','SCHEMA_NUMERIC_TYPE'),
-    ('temporal_dead_to_alive','temporal','TEMPORAL_RESURRECTION'),
+    ('temporal_dead_to_alive','temporal','TEMPORAL_STATUS_CONTRADICTION'),
     ('spatial_crs_mislabeled','spatial','COORDINATE_CRS_MISMATCH'),
     ('provenance_source_row_changed','provenance','PROVENANCE_SOURCE_ROW_MISMATCH'),
     ('provenance_transformation_removed','provenance','PROVENANCE_MISSING_TRANSFORMATION')])
@@ -76,6 +76,20 @@ def test_metrics_units_and_overlap():
     assert summary.iloc[0].precision==.5 and summary.iloc[0].recall==.5 and summary.iloc[0].f1==.5
     assert summary.iloc[0].alert_precision==.75
 
+def test_interpretive_context_does_not_create_a_new_detection():
+    from saguarodata.benchmark.metrics import signature
+    import json
+    baseline=dict(rule_id='TEMPORAL_SHRINKAGE',table='organism_observations',entity_identifier='later',
+        survey_event='event',field='height_m',source_lineage=json.dumps({'source_row_id':'source'}),
+        observed_value=json.dumps(dict(height_before=7.455,height_after=1.55,elapsed_years=26,
+            previous_notes='fairtop thin',current_verification_status='no')))
+    contextual=copy.deepcopy(baseline)
+    evidence=json.loads(contextual['observed_value']);evidence['previous_notes']='NEED CHECK';evidence['current_verification_status']='yes'
+    contextual['observed_value']=json.dumps(evidence)
+    assert signature(baseline)==signature(contextual)
+    evidence['height_after']=.5;contextual['observed_value']=json.dumps(evidence)
+    assert signature(baseline)!=signature(contextual)
+
 def test_numeric_intensity_preserves_targets(canonical):
     low,a=inject(canonical,'temporal_positive_growth',42,intensity=.25)
     high,b=inject(canonical,'temporal_positive_growth',42,intensity=1.)
@@ -83,6 +97,19 @@ def test_numeric_intensity_preserves_targets(canonical):
     assert a['intensity']==.25 and b['intensity']==1.
     changed=(high['organism_observations'].height_m-low['organism_observations'].height_m).dropna()
     assert changed.max()==75.
+
+@pytest.mark.parametrize('scenario,semantics',[
+    ('temporal_height_decrease','plausible_biological_transition'),
+    ('temporal_arm_collapse','plausible_biological_transition'),
+    ('temporal_dead_to_alive','semantic_contradiction'),
+    ('temporal_positive_growth','statistical_anomaly'),
+    ('row_negative_height','integrity_violation')])
+def test_intervention_semantics_in_truth_and_results(canonical,scenario,semantics):
+    mutated,truth=inject(canonical,scenario,1)
+    assert truth['scenario_semantics']==semantics
+    config=yaml.safe_load(open('configs/validation_rules.yaml'))
+    rows,_=score(truth,validate_layers(canonical,config),validate_layers(mutated,config))
+    assert {row['scenario_semantics'] for row in rows}=={semantics}
 
 def test_end_to_end_repeat_seeds(fixture_root,canonical):
     import shutil

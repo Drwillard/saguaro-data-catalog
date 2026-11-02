@@ -62,6 +62,7 @@ def build_graph(root='.',export_tables=True):
                 coverage['observations']+=1;coverage['observations_row_lineage_complete']+=int(valid)
                 expected=list(EXPECTED[table])
                 if table=='organism_observations' and pd.notna(row.get('longitude')):expected+=['longitude,latitude']
+                if table=='organism_observations' and isinstance(row.get('verification_source_column'),str):expected+=['verification_status']
                 coverage['expected_normalized_fields']+=len(expected)
                 known={r['field'] for r in records if r.get('transformation')}
                 coverage['normalized_fields_with_transformation']+=sum(f in known for f in expected)
@@ -191,6 +192,7 @@ def resume_built_tables(root='.'):
             if table=='spatial_features':continue
             expected=list(EXPECTED[table])
             if table=='organism_observations' and pd.notna(row.get('longitude')):expected+=['longitude,latitude']
+            if table=='organism_observations' and isinstance(row.get('verification_source_column'),str):expected+=['verification_status']
             coverage['observations']+=1;coverage['observations_row_lineage_complete']+=int(valid)
             coverage['expected_normalized_fields']+=len(expected)
             coverage['normalized_fields_with_transformation']+=sum(f in known for f in expected)

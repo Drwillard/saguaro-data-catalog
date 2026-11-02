@@ -1,32 +1,122 @@
-version: 1
+version: 2
 scenarios:
-  - {id: schema_column_renamed, class: schema, description: Rename height_m to an unexpected column}
-  - {id: schema_numeric_string, class: schema, description: Store a numeric height as text}
-  - {id: schema_required_removed, class: schema, description: Remove the observation identifier column}
-  - {id: schema_category_changed, class: schema, description: Introduce an undeclared status token}
-  - {id: schema_null_identifier, class: schema, description: Null a required observation ID}
-  - {id: schema_unit_removed, class: schema, description: Remove normalized height unit metadata}
-  - {id: row_negative_height, class: row, description: Make a measured height negative}
-  - {id: row_negative_arms, class: row, description: Make an arm count negative}
-  - {id: row_impossible_coordinate, class: row, description: Set latitude beyond 90 degrees}
-  - {id: row_duplicate_source, class: row, description: Append a new observation with identical source/event lineage}
-  - {id: row_duplicate_observation, class: row, description: Append an exact duplicate canonical row}
-  - {id: row_malformed_numeric, class: row, description: Replace height with a malformed numeric token}
-  - {id: temporal_dead_to_alive, class: temporal, description: Insert an explicit death followed by explicit life}
-  - {id: temporal_height_decrease, class: temporal, description: Artificially reduce a later height by 90 percent}
-  - {id: temporal_positive_growth, class: temporal, description: Add 100 meters to a later height}
-  - {id: temporal_arm_collapse, class: temporal, description: Set a positive prior count followed by zero arms}
-  - {id: temporal_duplicate_event, class: temporal, description: Append a second organism/event measurement}
-  - {id: temporal_identity_reassignment, class: temporal, description: Assign another supported organism ID}
-  - {id: temporal_year_swap, class: temporal, description: Swap years without changing event identity}
-  - {id: spatial_outside_plot, class: spatial, description: Move a coordinate well outside its assigned known polygon}
-  - {id: spatial_crs_removed, class: spatial, description: Remove CRS from a source spatial feature}
-  - {id: spatial_crs_mislabeled, class: spatial, description: Label UTM source coordinates as geographic}
-  - {id: spatial_coordinates_swapped, class: spatial, description: Swap latitude and longitude}
-  - {id: spatial_invalid_geometry, class: spatial, description: Replace valid feature bytes with a self-intersecting polygon}
-  - {id: spatial_other_plot_coordinates, class: spatial, description: Borrow coordinates from a different known plot}
-  - {id: provenance_source_row_changed, class: provenance, description: Change physical row while keeping old lineage IDs}
-  - {id: provenance_sha_mismatch, class: provenance, description: Replace the source SHA with an unknown hash}
-  - {id: provenance_transformation_removed, class: provenance, description: Delete the height transformation record}
-  - {id: provenance_unrecorded_value, class: provenance, description: Change normalized height without updating provenance}
-  - {id: provenance_duplicate_lineage, class: provenance, description: Append a canonical row with identical lineage}
+- id: schema_column_renamed
+  class: schema
+  description: Rename height_m to an unexpected column
+  scenario_semantics: integrity_violation
+- id: schema_numeric_string
+  class: schema
+  description: Store a numeric height as text
+  scenario_semantics: integrity_violation
+- id: schema_required_removed
+  class: schema
+  description: Remove the observation identifier column
+  scenario_semantics: integrity_violation
+- id: schema_category_changed
+  class: schema
+  description: Introduce an undeclared status token
+  scenario_semantics: integrity_violation
+- id: schema_null_identifier
+  class: schema
+  description: Null a required observation ID
+  scenario_semantics: integrity_violation
+- id: schema_unit_removed
+  class: schema
+  description: Remove normalized height unit metadata
+  scenario_semantics: integrity_violation
+- id: row_negative_height
+  class: row
+  description: Make a measured height negative
+  scenario_semantics: integrity_violation
+- id: row_negative_arms
+  class: row
+  description: Make an arm count negative
+  scenario_semantics: integrity_violation
+- id: row_impossible_coordinate
+  class: row
+  description: Set latitude beyond 90 degrees
+  scenario_semantics: integrity_violation
+- id: row_duplicate_source
+  class: row
+  description: Append a new observation with identical source/event lineage
+  scenario_semantics: integrity_violation
+- id: row_duplicate_observation
+  class: row
+  description: Append an exact duplicate canonical row
+  scenario_semantics: integrity_violation
+- id: row_malformed_numeric
+  class: row
+  description: Replace height with a malformed numeric token
+  scenario_semantics: integrity_violation
+- id: temporal_dead_to_alive
+  class: temporal
+  description: Insert an explicit death followed by explicit life
+  scenario_semantics: semantic_contradiction
+- id: temporal_height_decrease
+  class: temporal
+  description: Artificially reduce a later height by 90 percent
+  scenario_semantics: plausible_biological_transition
+- id: temporal_positive_growth
+  class: temporal
+  description: Add 100 meters to a later height
+  scenario_semantics: statistical_anomaly
+- id: temporal_arm_collapse
+  class: temporal
+  description: Set a positive prior count followed by zero arms
+  scenario_semantics: plausible_biological_transition
+- id: temporal_duplicate_event
+  class: temporal
+  description: Append a second organism/event measurement
+  scenario_semantics: integrity_violation
+- id: temporal_identity_reassignment
+  class: temporal
+  description: Assign another supported organism ID
+  scenario_semantics: integrity_violation
+- id: temporal_year_swap
+  class: temporal
+  description: Swap years without changing event identity
+  scenario_semantics: integrity_violation
+- id: spatial_outside_plot
+  class: spatial
+  description: Move a coordinate well outside its assigned known polygon
+  scenario_semantics: integrity_violation
+- id: spatial_crs_removed
+  class: spatial
+  description: Remove CRS from a source spatial feature
+  scenario_semantics: integrity_violation
+- id: spatial_crs_mislabeled
+  class: spatial
+  description: Label UTM source coordinates as geographic
+  scenario_semantics: integrity_violation
+- id: spatial_coordinates_swapped
+  class: spatial
+  description: Swap latitude and longitude
+  scenario_semantics: integrity_violation
+- id: spatial_invalid_geometry
+  class: spatial
+  description: Replace valid feature bytes with a self-intersecting polygon
+  scenario_semantics: integrity_violation
+- id: spatial_other_plot_coordinates
+  class: spatial
+  description: Borrow coordinates from a different known plot
+  scenario_semantics: integrity_violation
+- id: provenance_source_row_changed
+  class: provenance
+  description: Change physical row while keeping old lineage IDs
+  scenario_semantics: integrity_violation
+- id: provenance_sha_mismatch
+  class: provenance
+  description: Replace the source SHA with an unknown hash
+  scenario_semantics: integrity_violation
+- id: provenance_transformation_removed
+  class: provenance
+  description: Delete the height transformation record
+  scenario_semantics: integrity_violation
+- id: provenance_unrecorded_value
+  class: provenance
+  description: Change normalized height without updating provenance
+  scenario_semantics: integrity_violation
+- id: provenance_duplicate_lineage
+  class: provenance
+  description: Append a canonical row with identical lineage
+  scenario_semantics: integrity_violation

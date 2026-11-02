@@ -31,7 +31,7 @@ def fixture_root(tmp_path):
             source_url=f'https://example.test/{ref}',direct_download_url=f'https://example.test/{name}',downloadable=True)
         return acquire(tmp_path,record,Session(buffer.getvalue()))
     historic=pd.DataFrame([
-        dict(SaguaroID='A1',PLOT='41A',UTM_X_83=525600,UTM_Y_83=3564200,Height_1975=7,Height_2001=5,Height_2010=6,Height_2014=6.1,Arms_1975=3,Arms_2001=2,Arms_2010=2,Arms_2014=2,Notes_1975='alive',Notes_2001='dead',Notes_2010='alive',Notes_2014=''),
+        dict(SaguaroID='A1',PLOT='41A',Verify='Yes',UTM_X_83=525600,UTM_Y_83=3564200,Height_1975=7,Height_2001=5,Height_2010=6,Height_2014=6.1,Arms_1975=3,Arms_2001=2,Arms_2010=2,Arms_2014=2,Notes_1975='alive',Notes_2001='dead',Notes_2010='alive',Notes_2014=''),
         dict(SaguaroID='G1',PLOT='71G',Height_1975=3,Height_2001=4,Height_2010=5,Height_2014=6,Arms_1975='',Notes_1975='alive')])
     workbook('Steenbergh_fixture.xlsx','historic_plots',[('Sheet1',historic,6)],'1')
     census=pd.DataFrame([dict(Year=2000,Plot=1,Plot_type='Saguaro Census',Saguaro_id=1,**{'Height (m)':1.2,'Arms':'not measured'}),

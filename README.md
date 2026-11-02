@@ -53,6 +53,7 @@ linked = observations[observations.organism_id.notna()].iloc[0]
 print(ds.history(organism_id=linked.organism_id))
 print(ds.provenance(observation_id=linked.observation_id))
 print(ds.validation_findings(severity="warning"))
+print(ds.validation_findings(severity="warning", finding_category="biological_transition"))
 # Every table is also an ordinary pandas DataFrame:
 print(ds.table("vegetation_observations"))
 ```
@@ -100,15 +101,19 @@ The acquired public records cover Census, Historic Plots, Section17, vegetation 
 
 Vegetation 1990 workbook sheets are header-only. Its historical mapped attributes are preserved in `spatial_features`; the 2000/2010 tabular summaries are in `vegetation_observations`. These representations are not appended as independent duplicate measurements. Two 2020 Census reports were downloaded, but no raw individual workbook was exposed by the inspected holdings. Historic's coordinate columns are a shared source location, not independent GPS measurements in every year: this dataset cannot support a real temporal-displacement result.
 
-The report does not claim confirmed resurrection, confirmed source errors, or ecological conclusions. Unresolved cover units, inferred Historic height units, ambiguous zero heights, missing spatial references, inconsistent plot descriptions and dated free-text notes are visible limitations. See [protocol evidence](docs/protocol_differences.md), [canonical schema](docs/canonical_model.md), [validation rules](docs/validation_rules.md), [provenance](docs/provenance.md), and [research notes](docs/research_notes.md).
+Finding category distinguishes integrity violations, semantic contradictions, biological transitions, data-quality warnings and information; severity remains a separate review priority. Observation drawers show temporal pairs side by side with original notes, status basis, measurements and Verify context. The Historic Verify cell is shared by several survey rounds, not evidence of independent per-year verification. Descriptive notes do not become formal life/death status.
 
-## Corruption benchmark and evidence graph
+The executed [temporal interpretation](reports/temporal_interpretation.md) includes per-rule context counts and source-checked L130/L167 histories, with CSV/JSON companions. The current build has 502 temporal findings, including 94 height decreases, 226 arm decreases and zero explicit dead-to-alive contradictions. Decreases can reflect real breakage; positive height after death can describe a standing dead cactus. No finding automatically proves a source error or ecological conclusion. Unresolved cover units, inferred Historic height units, ambiguous zero heights, missing spatial references, inconsistent plot descriptions and dated notes remain visible limitations. See [protocol evidence](docs/protocol_differences.md), [canonical schema](docs/canonical_model.md), [validation rules](docs/validation_rules.md), [provenance](docs/provenance.md), and [research notes](docs/research_notes.md).
+
+## Synthetic intervention benchmark and evidence graph
 
 The project compares conventional validation with identity, temporal, spatial and
-provenance context using 30 deterministic synthetic corruption scenarios. Trials
+provenance context using 30 deterministic synthetic intervention scenarios. Trials
 run on isolated canonical copies, subtract unchanged-cohort findings, and preserve
 ground truth and detector outcomes. Results are benchmark evidence, not ecological
 conclusions or estimates of natural source-error prevalence.
+
+`scenario_semantics` separates integrity interventions, plausible biological transitions, semantic contradictions and statistical anomalies in configuration, truth and results. Height/arm loss is screened without calling it intrinsically invalid. The legacy corruption CLI and ID fields remain supported; TEMPORAL_RESURRECTION input aliases resolve to TEMPORAL_STATUS_CONTRADICTION, the warning emitted for conflicting explicit dead/alive records.
 
 ```powershell
 saguarodata validate

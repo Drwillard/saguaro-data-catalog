@@ -16,18 +16,18 @@ def records(**changes):
 
 def test_temporal_resurrection_shrinkage_and_arms():
     rules={r['rule_id'] for r in temporal_findings(records(),CONFIG)}
-    assert {'TEMPORAL_RESURRECTION','TEMPORAL_SHRINKAGE','TEMPORAL_ARM_DECREASE'}<=rules
+    assert {'TEMPORAL_STATUS_CONTRADICTION','TEMPORAL_SHRINKAGE','TEMPORAL_ARM_DECREASE'}<=rules
 
 def test_unlinked_individuals_are_excluded():
     assert temporal_findings(records(organism_id=None),CONFIG)==[]
 
 def test_not_found_is_not_death():
     frame=records();frame.loc[0,'status']='not_found'
-    assert 'TEMPORAL_RESURRECTION' not in {r['rule_id'] for r in temporal_findings(frame,CONFIG)}
+    assert 'TEMPORAL_STATUS_CONTRADICTION' not in {r['rule_id'] for r in temporal_findings(frame,CONFIG)}
 
 def test_inferred_alive_is_not_explicit_resurrection():
     frame=records();frame.loc[1,'status_source']='inferred_measurement'
-    assert 'TEMPORAL_RESURRECTION' not in {r['rule_id'] for r in temporal_findings(frame,CONFIG)}
+    assert 'TEMPORAL_STATUS_CONTRADICTION' not in {r['rule_id'] for r in temporal_findings(frame,CONFIG)}
 
 def test_zero_sentinel_is_not_extreme_shrinkage():
     frame=records();frame.loc[1,'height_m']=0

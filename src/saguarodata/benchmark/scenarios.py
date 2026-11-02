@@ -16,3 +16,9 @@ def load_scenarios(root):
     scenarios=config['scenarios']
     if len({row['id'] for row in scenarios})!=len(scenarios):raise ValueError('Scenario IDs must be unique')
     return scenarios
+
+def scenario_semantics(scenario_id):
+    return {'temporal_height_decrease':'plausible_biological_transition',
+            'temporal_arm_collapse':'plausible_biological_transition',
+            'temporal_dead_to_alive':'semantic_contradiction',
+            'temporal_positive_growth':'statistical_anomaly'}.get(scenario_id,'integrity_violation')

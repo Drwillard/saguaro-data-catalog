@@ -6,6 +6,8 @@ findings. These tables remain authoritative. There is no external graph service
 or new required dependency. Typed nodes and edges are stored in local SQLite for
 bounded traversal and exported to Parquet; JSON, GraphML and CSV are supported.
 
+When a source Verify column exists, its literal normalization has a provenance transformation and is included in expected field coverage. Historic source-row Verify scope remains visible; graph reachability does not establish per-survey verification or scientific correctness. Finding nodes retain category independently of severity.
+
 ## Reproduce and query
 
 ```powershell

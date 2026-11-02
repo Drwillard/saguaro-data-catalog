@@ -1,0 +1,36 @@
+{
+  "temporal_findings": 502,
+  "findings_by_category": {
+    "integrity_violation": 9467,
+    "semantic_contradiction": 0,
+    "biological_transition": 320,
+    "data_quality_warning": 6228,
+    "informational": 1693
+  },
+  "context_totals": {
+    "has_any_note": 435,
+    "has_explicit_alive_dead_note": 320,
+    "has_explicit_status_note": 332,
+    "has_review_annotation": 0,
+    "has_tag_only_or_off_plot": 0,
+    "has_not_measured_annotation": 0,
+    "has_verify_status": 502,
+    "verify_yes": 409,
+    "verify_no": 79,
+    "verify_not_found": 14
+  },
+  "real_status_contradictions": 0,
+  "cases": {
+    "L130": [
+      "e3770fc78729a3b8520c5cb2",
+      "58f020371babd818c05cb635",
+      "1a66538c24e81ae87d754da5"
+    ],
+    "L167": [
+      "7b73142ad26964c59b772cd7",
+      "2b5ded29b7b4e5aec8a28645",
+      "8b997c50962a63933437451a",
+      "cff6f41d0157a359f1238936"
+    ]
+  }
+}

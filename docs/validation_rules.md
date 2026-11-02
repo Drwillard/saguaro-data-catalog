@@ -4,7 +4,23 @@ Findings are review candidates. Severity is error, warning or info; status is in
 
 Structural checks cover required plot IDs, plot/event foreign keys, negative measurements, unparseable numeric tokens, noninteger arm counts, duplicate observation/source/organism-event keys, duplicate local Census IDs, categorical drift, inferred units, and explicitly unsupported 71G linkage. Categorical drift preserves exact source phrases. No maximum cactus height is hard-coded.
 
-Temporal rules require a supported non-null organism_id and distinct survey events. Ambiguous duplicate organism/event records are excluded from temporal comparisons. TEMPORAL_RESURRECTION requires explicitly dead then explicitly alive; not_found and positive height do not count as life/death evidence. A measurement after explicit death has its own warning. Notes saying 'dead 2014' in a 2010 column do not establish death in 2010.
+Temporal rules require a supported non-null organism_id and distinct survey events. Ambiguous duplicate organism/event records are excluded from temporal comparisons. TEMPORAL_STATUS_CONTRADICTION requires explicitly dead then explicitly alive; not_found and positive height do not count as life/death evidence. A measurement after explicit death has its own warning: standing dead cacti can still be measured. Notes saying 'dead 2014' in a 2010 column do not establish death in 2010.
+
+Category describes the kind of issue; severity describes review priority. Both are stored on every finding and independently filterable in the API and explorer.
+
+| finding_category | Meaning |
+|---|---|
+| integrity_violation | Declared schema, key, reference or evidence-chain constraint is breached |
+| semantic_contradiction | Explicit statuses conflict for the same supported identity |
+| biological_transition | A potentially real height/arm loss needs scientific context |
+| data_quality_warning | Measurement, interpretation or coverage needs review |
+| informational | Collection context or a status-resolution/reobservation event |
+
+Height shrinkage and arm decreases remain warnings with unchanged thresholds, categorized biological_transition. Field breakage, measurement differences, unit problems, transcription and linkage remain possible explanations, not adjudicated causes. After-death measurements are data_quality_warning; robust growth outliers are statistical screens in that category. Reobservation after not_found and unknown-to-alive resolution are informational with info severity. Prior absence is not death.
+
+Every temporal finding carries both observation IDs, years, heights, arms, normalized/raw status and status basis, original notes, operational tags, and normalized/raw Verify with its time basis. Historic Verify is shared physical-row context, not an independent verification for each year. Exact operational phrases are parsed separately from formal status; descriptive prose such as fairtop thin, damaged, poor or leaning remains unknown status. See the canonical model for the literal phrase vocabulary.
+
+Migration: TEMPORAL_RESURRECTION is retained only as an input alias for TEMPORAL_STATUS_CONTRADICTION in finding creation, API rule filters and explorer deep links. Newly generated findings use the new rule ID, warning severity and semantic_contradiction category; no literal biological reversal is claimed. Old Parquet findings without a category receive one when read through Dataset.validation_findings(). Rebuild and validate to persist the new schema and paired evidence.
 
 Shrinkage requires both the absolute decrease and proportional decrease in `configs/validation_rules.yaml`. It is a warning: broken tops are possible. Arm decreases are warnings because breakage is possible. Historic zero heights remain zero but are excluded from height-pair comparisons because their sentinel semantics are unresolved. Growth outliers use the median plus six robust standard deviations (1.4826 MAD, IQR/1.349 fallback), within program/year intervals; groups smaller than the configured minimum and groups with zero spread are not tested. These are screening thresholds, not biological limits.
 

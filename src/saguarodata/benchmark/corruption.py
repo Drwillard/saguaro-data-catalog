@@ -5,7 +5,7 @@ import pandas as pd
 from shapely.geometry import Polygon
 from ..normalize.identifiers import stable_id
 from ..jsonutil import sanitize
-from .scenarios import expected_detection_classes
+from .scenarios import expected_detection_classes,scenario_semantics
 
 class IneligibleScenario(ValueError):pass
 
@@ -105,6 +105,7 @@ def inject(tables, scenario, seed=42, ordinal=0, intensity=1.0):
     if table=='organism_observations' and entity!='__table__':entity=str(obs.at[i,'observation_id'] or entity)
     corruption_id=stable_id('corruption',seed,ordinal,sid) if intensity==1 else stable_id('corruption',seed,ordinal,sid,intensity)
     truth=dict(corruption_id=corruption_id,scenario=sid,corruption_class=category,intensity=float(intensity),
+        scenario_semantics=scenario.get('scenario_semantics',scenario_semantics(sid)) if isinstance(scenario,dict) else scenario_semantics(sid),
         table=table,entity_id=entity,row_ids=sorted(targets),fields=sorted(fields),
         expected_detection_class=expected_detection_classes(sid,category),seed=int(seed),ordinal=int(ordinal),changes_json=json.dumps(changes,default=lambda v:v.hex() if isinstance(v,bytes) else str(v),sort_keys=True))
     return copies,truth

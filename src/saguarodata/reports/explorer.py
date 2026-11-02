@@ -15,7 +15,7 @@ OBS_COLUMNS = ['observation_id', 'program_id', 'survey_year', 'plot_id', 'organi
     'source_individual_id', 'status', 'height_m', 'arm_count', 'height_missing_reason',
     'arm_count_missing_reason', 'unit_source', 'latitude', 'longitude', 'nominal_round',
     'coordinate_time_basis']
-FINDING_COLUMNS = ['finding_id','entity_identifier', 'rule_id', 'severity', 'status', 'table', 'program_id',
+FINDING_COLUMNS = ['finding_id','entity_identifier', 'rule_id', 'finding_category','severity', 'status', 'table', 'program_id',
     'survey_year', 'plot_id', 'field', 'observed_value']
 VEGETATION_COLUMNS=['observation_id','program_id','survey_year','plot_id','species_raw','species_name_raw','count','count_raw','cover_raw','cover_unit_raw','area_m2']
 AGGREGATE_COLUMNS=['observation_id','program_id','survey_year','plot_id','representation','count_estimate','density_per_ha','count_basis']

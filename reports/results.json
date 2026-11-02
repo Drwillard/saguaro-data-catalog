@@ -35,6 +35,49 @@
     "TEMPORAL_REOBSERVED": 3,
     "INVALID_OR_NULL_GEOMETRY": 1
   },
+  "findings_by_category": {
+    "integrity_violation": 9467,
+    "semantic_contradiction": 0,
+    "biological_transition": 320,
+    "data_quality_warning": 6228,
+    "informational": 1693
+  },
+  "temporal_interpretation": {
+    "temporal_findings": 502,
+    "findings_by_category": {
+      "integrity_violation": 9467,
+      "semantic_contradiction": 0,
+      "biological_transition": 320,
+      "data_quality_warning": 6228,
+      "informational": 1693
+    },
+    "context_totals": {
+      "has_any_note": 435,
+      "has_explicit_alive_dead_note": 320,
+      "has_explicit_status_note": 332,
+      "has_review_annotation": 0,
+      "has_tag_only_or_off_plot": 0,
+      "has_not_measured_annotation": 0,
+      "has_verify_status": 502,
+      "verify_yes": 409,
+      "verify_no": 79,
+      "verify_not_found": 14
+    },
+    "real_status_contradictions": 0,
+    "cases": {
+      "L130": [
+        "e3770fc78729a3b8520c5cb2",
+        "58f020371babd818c05cb635",
+        "1a66538c24e81ae87d754da5"
+      ],
+      "L167": [
+        "7b73142ad26964c59b772cd7",
+        "2b5ded29b7b4e5aec8a28645",
+        "8b997c50962a63933437451a",
+        "cff6f41d0157a359f1238936"
+      ]
+    }
+  },
   "coverage": {
     "linked_organisms": 3169,
     "unlinked_observations": 54043,
@@ -65,12 +108,13 @@
       "entity_identifier": "8b997c50962a63933437451a",
       "survey_event": "historic_plots:2010",
       "field": "height_m",
-      "observed_value": "{\"previous\": \"2b5ded29b7b4e5aec8a28645\", \"height\": 3.4}",
+      "observed_value": "{\"previous\": \"2b5ded29b7b4e5aec8a28645\", \"previous_observation_id\": \"2b5ded29b7b4e5aec8a28645\", \"current_observation_id\": \"8b997c50962a63933437451a\", \"previous_year\": 2001, \"current_year\": 2010, \"previous_height_m\": 0.0, \"previous_arm_count\": null, \"previous_unit_source\": \"inferred\", \"previous_height_normalization_unit\": \"m\", \"previous_status\": \"dead\", \"previous_status_raw\": \"dead\", \"previous_status_source\": \"explicit_note\", \"previous_notes\": \"dead\", \"previous_verification_status\": \"yes\", \"previous_verification_raw\": \"Yes\", \"previous_verification_time_basis\": \"shared_source_row\", \"previous_tag_only\": false, \"previous_off_plot\": false, \"previous_not_measured\": false, \"previous_needs_review\": false, \"current_height_m\": 3.4, \"current_arm_count\": 0.0, \"current_unit_source\": \"inferred\", \"current_height_normalization_unit\": \"m\", \"current_status\": \"unknown\", \"current_status_raw\": \"\", \"current_status_source\": \"unknown\", \"current_notes\": \"\", \"current_verification_status\": \"yes\", \"current_verification_raw\": \"Yes\", \"current_verification_time_basis\": \"shared_source_row\", \"current_tag_only\": false, \"current_off_plot\": false, \"current_not_measured\": false, \"current_needs_review\": false, \"height\": 3.4}",
       "expected_condition": "Review measurements recorded after explicit death",
-      "message": "A standing dead cactus can be measured; positive height does not establish resurrection.",
+      "message": "A standing dead cactus can still be measured. A later positive height does not establish survival; review status and measurement semantics.",
       "source_lineage": "{\"source_dataset\": \"historic_plots\", \"source_file\": \"data/raw/historic_plots/6f62e764accb75e61b8b4d0b69c4d42d90fb91c197d85f5ae0f42c5bf9236a3a/Steenbergh&Lowe_HistoricSaguaroPlotSurvey.xls\", \"source_sheet\": \"Sheet1\", \"source_row\": 2969, \"source_reference_id\": \"2225187\", \"source_sha256\": \"6f62e764accb75e61b8b4d0b69c4d42d90fb91c197d85f5ae0f42c5bf9236a3a\", \"source_row_id\": \"25bcf04bcfcaf22c058739f5\"}",
       "status": "open",
-      "finding_id": "a185a66f6e4024b49b41a916"
+      "finding_category": "data_quality_warning",
+      "finding_id": "bfcf14ab785007073b33933d"
     },
     {
       "rule_id": "TEMPORAL_SHRINKAGE",
@@ -79,12 +123,13 @@
       "entity_identifier": "58f020371babd818c05cb635",
       "survey_event": "historic_plots:2001",
       "field": "height_m",
-      "observed_value": "{\"previous\": \"e3770fc78729a3b8520c5cb2\", \"height_before\": 7.455, \"height_after\": 1.55, \"elapsed_years\": 26}",
+      "observed_value": "{\"previous\": \"e3770fc78729a3b8520c5cb2\", \"previous_observation_id\": \"e3770fc78729a3b8520c5cb2\", \"current_observation_id\": \"58f020371babd818c05cb635\", \"previous_year\": 1975, \"current_year\": 2001, \"previous_height_m\": 7.455, \"previous_arm_count\": 6.0, \"previous_unit_source\": \"inferred\", \"previous_height_normalization_unit\": \"m\", \"previous_status\": \"unknown\", \"previous_status_raw\": \"fairtop thin\", \"previous_status_source\": \"unknown\", \"previous_notes\": \"fairtop thin\", \"previous_verification_status\": \"no\", \"previous_verification_raw\": \"No\", \"previous_verification_time_basis\": \"shared_source_row\", \"previous_tag_only\": false, \"previous_off_plot\": false, \"previous_not_measured\": false, \"previous_needs_review\": false, \"current_height_m\": 1.55, \"current_arm_count\": 0.0, \"current_unit_source\": \"inferred\", \"current_height_normalization_unit\": \"m\", \"current_status\": \"alive\", \"current_status_raw\": \"live\", \"current_status_source\": \"explicit_note\", \"current_notes\": \"live\", \"current_verification_status\": \"no\", \"current_verification_raw\": \"No\", \"current_verification_time_basis\": \"shared_source_row\", \"current_tag_only\": false, \"current_off_plot\": false, \"current_not_measured\": false, \"current_needs_review\": false, \"height_before\": 7.455, \"height_after\": 1.55, \"elapsed_years\": 26}",
       "expected_condition": "Decrease below configured absolute and proportional thresholds",
-      "message": "Possible broken top, measurement change, unit issue, transcription error or mislinkage.",
+      "message": "Large height decrease detected. Possible explanations include top/stem breakage, measurement differences, source-unit problems, transcription error, or identity mismatch.",
       "source_lineage": "{\"source_dataset\": \"historic_plots\", \"source_file\": \"data/raw/historic_plots/6f62e764accb75e61b8b4d0b69c4d42d90fb91c197d85f5ae0f42c5bf9236a3a/Steenbergh&Lowe_HistoricSaguaroPlotSurvey.xls\", \"source_sheet\": \"Sheet1\", \"source_row\": 2928, \"source_reference_id\": \"2225187\", \"source_sha256\": \"6f62e764accb75e61b8b4d0b69c4d42d90fb91c197d85f5ae0f42c5bf9236a3a\", \"source_row_id\": \"227cf80f0dc047b11610d301\"}",
       "status": "open",
-      "finding_id": "67979131cff8765e27424dee"
+      "finding_category": "biological_transition",
+      "finding_id": "ec05f0030484165fe3fdef17"
     },
     {
       "rule_id": "TEMPORAL_GROWTH_OUTLIER",
@@ -93,12 +138,13 @@
       "entity_identifier": "19b48e28e80bc68afa3c25ad",
       "survey_event": "historic_plots:2010",
       "field": "height_m",
-      "observed_value": "{\"previous\": \"b1ad67f68ca13719afe199de\", \"annual_growth_m\": 0.5, \"empirical_upper\": 0.46202666666666686, \"median\": 0.06666666666666672, \"robust_spread\": 0.06589333333333336, \"n\": 612}",
+      "observed_value": "{\"previous\": \"b1ad67f68ca13719afe199de\", \"previous_observation_id\": \"b1ad67f68ca13719afe199de\", \"current_observation_id\": \"19b48e28e80bc68afa3c25ad\", \"previous_year\": 2001, \"current_year\": 2010, \"previous_height_m\": 3.0, \"previous_arm_count\": 0.0, \"previous_unit_source\": \"inferred\", \"previous_height_normalization_unit\": \"m\", \"previous_status\": \"alive\", \"previous_status_raw\": \"live\", \"previous_status_source\": \"explicit_note\", \"previous_notes\": \"live\", \"previous_verification_status\": \"yes\", \"previous_verification_raw\": \"Yes\", \"previous_verification_time_basis\": \"shared_source_row\", \"previous_tag_only\": false, \"previous_off_plot\": false, \"previous_not_measured\": false, \"previous_needs_review\": false, \"current_height_m\": 7.5, \"current_arm_count\": 0.0, \"current_unit_source\": \"inferred\", \"current_height_normalization_unit\": \"m\", \"current_status\": \"unknown\", \"current_status_raw\": \"\", \"current_status_source\": \"unknown\", \"current_notes\": \"\", \"current_verification_status\": \"yes\", \"current_verification_raw\": \"Yes\", \"current_verification_time_basis\": \"shared_source_row\", \"current_tag_only\": false, \"current_off_plot\": false, \"current_not_measured\": false, \"current_needs_review\": false, \"annual_growth_m\": 0.5, \"empirical_upper\": 0.46202666666666686, \"median\": 0.06666666666666672, \"robust_spread\": 0.06589333333333336, \"n\": 612}",
       "expected_condition": "Annualized growth within interval-specific robust empirical threshold",
       "message": "Statistical screening only; no biological maximum asserted.",
       "source_lineage": "{\"source_dataset\": \"historic_plots\", \"source_file\": \"data/raw/historic_plots/6f62e764accb75e61b8b4d0b69c4d42d90fb91c197d85f5ae0f42c5bf9236a3a/Steenbergh&Lowe_HistoricSaguaroPlotSurvey.xls\", \"source_sheet\": \"Sheet1\", \"source_row\": 3091, \"source_reference_id\": \"2225187\", \"source_sha256\": \"6f62e764accb75e61b8b4d0b69c4d42d90fb91c197d85f5ae0f42c5bf9236a3a\", \"source_row_id\": \"afbbd0cd3f80ad308f101bac\"}",
       "status": "open",
-      "finding_id": "1584f4f41da9f294ed246413"
+      "finding_category": "data_quality_warning",
+      "finding_id": "c5e22a06ff75558093bbfa37"
     },
     {
       "rule_id": "TEMPORAL_ARM_DECREASE",
@@ -107,12 +153,13 @@
       "entity_identifier": "58f020371babd818c05cb635",
       "survey_event": "historic_plots:2001",
       "field": "arm_count",
-      "observed_value": "{\"previous\": \"e3770fc78729a3b8520c5cb2\", \"arms_before\": 6.0, \"arms_after\": 0.0}",
+      "observed_value": "{\"previous\": \"e3770fc78729a3b8520c5cb2\", \"previous_observation_id\": \"e3770fc78729a3b8520c5cb2\", \"current_observation_id\": \"58f020371babd818c05cb635\", \"previous_year\": 1975, \"current_year\": 2001, \"previous_height_m\": 7.455, \"previous_arm_count\": 6.0, \"previous_unit_source\": \"inferred\", \"previous_height_normalization_unit\": \"m\", \"previous_status\": \"unknown\", \"previous_status_raw\": \"fairtop thin\", \"previous_status_source\": \"unknown\", \"previous_notes\": \"fairtop thin\", \"previous_verification_status\": \"no\", \"previous_verification_raw\": \"No\", \"previous_verification_time_basis\": \"shared_source_row\", \"previous_tag_only\": false, \"previous_off_plot\": false, \"previous_not_measured\": false, \"previous_needs_review\": false, \"current_height_m\": 1.55, \"current_arm_count\": 0.0, \"current_unit_source\": \"inferred\", \"current_height_normalization_unit\": \"m\", \"current_status\": \"alive\", \"current_status_raw\": \"live\", \"current_status_source\": \"explicit_note\", \"current_notes\": \"live\", \"current_verification_status\": \"no\", \"current_verification_raw\": \"No\", \"current_verification_time_basis\": \"shared_source_row\", \"current_tag_only\": false, \"current_off_plot\": false, \"current_not_measured\": false, \"current_needs_review\": false, \"arms_before\": 6.0, \"arms_after\": 0.0}",
       "expected_condition": "Review arm-count decreases",
-      "message": "Arms can break; a decrease is a warning, not proof of source error.",
+      "message": "Arm count decreased between surveys. Saguaros can lose arms through breakage or damage; review source notes and measurements before interpreting this as an error.",
       "source_lineage": "{\"source_dataset\": \"historic_plots\", \"source_file\": \"data/raw/historic_plots/6f62e764accb75e61b8b4d0b69c4d42d90fb91c197d85f5ae0f42c5bf9236a3a/Steenbergh&Lowe_HistoricSaguaroPlotSurvey.xls\", \"source_sheet\": \"Sheet1\", \"source_row\": 2928, \"source_reference_id\": \"2225187\", \"source_sha256\": \"6f62e764accb75e61b8b4d0b69c4d42d90fb91c197d85f5ae0f42c5bf9236a3a\", \"source_row_id\": \"227cf80f0dc047b11610d301\"}",
       "status": "open",
-      "finding_id": "e32e8e77359e440d65f86e51"
+      "finding_category": "biological_transition",
+      "finding_id": "ab7549627e42bf157c5b847b"
     },
     {
       "rule_id": "OUTSIDE_ASSIGNED_PLOT",
@@ -126,6 +173,7 @@
       "message": "Boundary/GPS differences or plot assignment require review.",
       "source_lineage": "{\"source_dataset\": \"historic_plots\", \"source_file\": \"data/raw/historic_plots/6f62e764accb75e61b8b4d0b69c4d42d90fb91c197d85f5ae0f42c5bf9236a3a/Steenbergh&Lowe_HistoricSaguaroPlotSurvey.xls\", \"source_sheet\": \"Sheet1\", \"source_row\": 74, \"source_reference_id\": \"2225187\", \"source_sha256\": \"6f62e764accb75e61b8b4d0b69c4d42d90fb91c197d85f5ae0f42c5bf9236a3a\", \"source_row_id\": \"2730b441b2dbc078bdea9a47\"}",
       "status": "open",
+      "finding_category": "data_quality_warning",
       "finding_id": "86fdc4a29f23a863a6f4e73b"
     },
     {
@@ -140,6 +188,7 @@
       "message": "Could be repeated rounds or source duplication; no deduplication performed.",
       "source_lineage": "{\"source_dataset\": \"census\", \"source_file\": \"data/raw/census/acd73e553169c2808c3e4829cba17e95bfdb08824144f1985befcfa6a9b589ff/SaguaroCensus_RawData_1990_2000_2010.xlsx\", \"source_sheet\": \"RawData_2000_2010\", \"source_row\": 105, \"source_reference_id\": \"2225188\", \"source_sha256\": \"acd73e553169c2808c3e4829cba17e95bfdb08824144f1985befcfa6a9b589ff\", \"source_row_id\": \"7bca6af4e8fdab8bcc9b56df\"}",
       "status": "open",
+      "finding_category": "data_quality_warning",
       "finding_id": "30f689ba65439f8192d49618"
     },
     {
@@ -154,6 +203,7 @@
       "message": "Shared positions may reflect source copies, precision or mapping methods.",
       "source_lineage": "{\"source_dataset\": \"historic_plots\", \"source_file\": \"data/raw/historic_plots/6f62e764accb75e61b8b4d0b69c4d42d90fb91c197d85f5ae0f42c5bf9236a3a/Steenbergh&Lowe_HistoricSaguaroPlotSurvey.xls\", \"source_sheet\": \"Sheet1\", \"source_row\": 1420, \"source_reference_id\": \"2225187\", \"source_sha256\": \"6f62e764accb75e61b8b4d0b69c4d42d90fb91c197d85f5ae0f42c5bf9236a3a\", \"source_row_id\": \"6bd75f4874f9b4660d187c45\"}",
       "status": "open",
+      "finding_category": "data_quality_warning",
       "finding_id": "62cabaa904c28496449f4606"
     },
     {
@@ -168,6 +218,7 @@
       "message": "Zero retained; excluded from temporal height comparisons.",
       "source_lineage": "{\"source_dataset\": \"historic_plots\", \"source_file\": \"data/raw/historic_plots/6f62e764accb75e61b8b4d0b69c4d42d90fb91c197d85f5ae0f42c5bf9236a3a/Steenbergh&Lowe_HistoricSaguaroPlotSurvey.xls\", \"source_sheet\": \"Sheet1\", \"source_row\": 8, \"source_reference_id\": \"2225187\", \"source_sha256\": \"6f62e764accb75e61b8b4d0b69c4d42d90fb91c197d85f5ae0f42c5bf9236a3a\", \"source_row_id\": \"f7866b0c5e85655ff3cfa0ed\"}",
       "status": "open",
+      "finding_category": "data_quality_warning",
       "finding_id": "4047fa604bb7972f8b5be306"
     },
     {
@@ -182,6 +233,7 @@
       "message": "Malformed source geometry retained as null or invalid; no repair.",
       "source_lineage": "{\"source_dataset\": \"vegetation\", \"source_file\": \"data/raw/vegetation/882f2ea68ecb57598dbb7d567cc1ca1a3e6193f00c81d494dfb7d5ab1441d102/GIS Data Veg Plots.zip\", \"source_sheet\": \"GIS Data Veg Plots/1990 Maps/Original CAD files in ArcView3_1 format/plot27/eplot27.shp\", \"source_row\": 496, \"source_reference_id\": \"2225403\", \"source_sha256\": \"882f2ea68ecb57598dbb7d567cc1ca1a3e6193f00c81d494dfb7d5ab1441d102\", \"source_row_id\": \"1ee1fef6d53514324e08c331\"}",
       "status": "open",
+      "finding_category": "integrity_violation",
       "finding_id": "5f5016a10f5b44e18547ed1a"
     },
     {
@@ -196,6 +248,7 @@
       "message": "Local or undocumented source coordinates; excluded from geographic validation. One finding per affected layer.",
       "source_lineage": "{\"source_dataset\": \"vegetation\", \"source_file\": \"data/raw/vegetation/882f2ea68ecb57598dbb7d567cc1ca1a3e6193f00c81d494dfb7d5ab1441d102/GIS Data Veg Plots.zip\", \"source_sheet\": \"GIS Data Veg Plots/1990 Data Analysis/plot01/plot1.shp\", \"source_row\": 1, \"source_reference_id\": \"2225403\", \"source_sha256\": \"882f2ea68ecb57598dbb7d567cc1ca1a3e6193f00c81d494dfb7d5ab1441d102\", \"source_row_id\": \"fd02ceb6b6235b5531f222be\"}",
       "status": "open",
+      "finding_category": "informational",
       "finding_id": "fcc57350894200a486d9d6d2"
     }
   ]

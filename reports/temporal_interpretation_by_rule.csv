@@ -1,0 +1,8 @@
+rule_id,finding_category,severity,count,has_any_note,has_explicit_alive_dead_note,has_explicit_status_note,has_review_annotation,has_tag_only_or_off_plot,has_not_measured_annotation,has_verify_status,verify_yes,verify_no,verify_not_found
+TEMPORAL_SHRINKAGE,biological_transition,warning,94,80,47,47,0,0,0,94,74,19,1
+TEMPORAL_ARM_DECREASE,biological_transition,warning,226,177,100,109,0,0,0,226,179,35,12
+TEMPORAL_STATUS_CONTRADICTION,semantic_contradiction,warning,0,0,0,0,0,0,0,0,0,0,0
+TEMPORAL_MEASUREMENT_AFTER_DEATH,data_quality_warning,warning,49,49,49,49,0,0,0,49,46,2,1
+TEMPORAL_REOBSERVED,informational,info,3,3,0,3,0,0,0,3,3,0,0
+TEMPORAL_GROWTH_OUTLIER,data_quality_warning,warning,21,17,15,15,0,0,0,21,21,0,0
+TEMPORAL_STATUS_RESOLVED,informational,info,109,109,109,109,0,0,0,109,86,23,0

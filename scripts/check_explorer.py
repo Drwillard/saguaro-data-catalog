@@ -255,6 +255,35 @@ with sync_playwright() as playwright:
     page.locator('#close-detail').click()
     checks.append('K30 observation exposes original source and contextual photo links near the top, without claiming an unmatched cactus photo')
 
+    page.goto(args.url+'#tab=findings&findingCategory=biological_transition&severity=warning&mapBackground=none')
+    page.reload()
+    expect(page.locator('#finding-category')).to_have_value('biological_transition',timeout=30000)
+    page.wait_for_function('visibleFindings.length===320')
+    assert page.evaluate('visibleFindings.every(f=>f.finding_category==="biological_transition" && f.severity==="warning")')
+    page.goto(args.url+'#tab=findings&entity=58f020371babd818c05cb635&mapBackground=none')
+    page.reload()
+    card=page.locator('.finding-card').filter(has_text='TEMPORAL_SHRINKAGE').first
+    expect(card.locator('.temporal-comparison')).to_be_visible(timeout=30000)
+    expect(card).to_contain_text('fairtop thin')
+    expect(card).to_contain_text('live')
+    expect(card).to_contain_text('Shared source-row flag')
+    expect(card).to_contain_text('source: No')
+    expect(card).to_contain_text('Biological transition')
+    assert card.locator('.temporal-comparison section').count()==2
+    page.screenshot(path=str(out/'l130-temporal-context.png'))
+    page.locator('#close-detail').click()
+    page.goto(args.url+'#tab=findings&entity=8b997c50962a63933437451a&mapBackground=none')
+    page.reload()
+    card=page.locator('.finding-card').filter(has_text='TEMPORAL_MEASUREMENT_AFTER_DEATH').first
+    expect(card.locator('.temporal-comparison')).to_be_visible(timeout=30000)
+    expect(card).to_contain_text('standing dead')
+    expect(card).to_contain_text('unknown')
+    expect(card).to_contain_text('source: Yes')
+    assert page.locator('.finding-card').filter(has_text='TEMPORAL_STATUS_CONTRADICTION').count()==0
+    page.screenshot(path=str(out/'l167-temporal-context.png'))
+    page.locator('#close-detail').click()
+    checks.append('Independent category/severity filters and L130/L167 paired notes/Verify preserve conservative scientific interpretation')
+
     page.set_viewport_size({'width':390,'height':844})
     page.goto(args.url);expect(page.locator('#application')).to_be_visible(timeout=60000)
     assert page.evaluate('document.documentElement.scrollWidth <= window.innerWidth+1')

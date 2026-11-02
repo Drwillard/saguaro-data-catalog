@@ -2,6 +2,7 @@ import json
 from . import excel
 from ..normalize.identifiers import stable_id, normalize_identifier
 from ..normalize.missing import number
+from ..normalize.annotations import observation_annotations,verification_status,ANNOTATION_METHOD
 
 def stringify(value):
     return '' if value is None else str(value)
@@ -22,7 +23,12 @@ def observation(entry, sheet, rownum, row, program, year, plot, height_column=No
     arms, arms_reason = number(arms_raw, bool(arms_column))
     from ..normalize.units import height_to_m
     notes = stringify(row.get(notes_column, '')) if notes_column else ''
-    return dict(**source, observation_id=stable_id(source['source_row_id'], program, year), program_id=program,
+    verify_raw=stringify(row.get('Verify',''))
+    return dict(**source, **observation_annotations(notes), annotation_method=ANNOTATION_METHOD,notes_source_column=notes_column,
+        verification_status=verification_status(verify_raw),verification_raw=verify_raw,
+        verification_source_column='Verify' if 'Verify' in row else None,
+        verification_time_basis=('shared_source_row' if program=='historic_plots' else 'source_record') if 'Verify' in row else None,
+        observation_id=stable_id(source['source_row_id'], program, year), program_id=program,
         organism_id=individual, survey_event_id=f'{program}:{year}', plot_id=plot_id, survey_year=int(year),
         nominal_round=int(year), status=status or 'unknown', status_raw=notes,
         status_source=status_source or 'unknown', height_raw=stringify(height_raw), height_unit_raw=unit if unit_source=='documented' else None,

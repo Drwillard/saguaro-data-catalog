@@ -28,7 +28,7 @@ def test_mock_download_to_parquet_query_and_report(fixture_root):
     trace=ds.provenance(obs.observation_id)
     assert set(trace.field)>={'height_m','arm_count','status','longitude,latitude'}
     assert trace.source_row.eq(8).all()
-    assert 'TEMPORAL_RESURRECTION' in set(findings.rule_id)
+    assert 'TEMPORAL_STATUS_CONTRADICTION' in set(findings.rule_id)
     summary=report(root)
     assert summary['validation_findings']>0
     assert (root/'reports/data_quality_report.html').exists()

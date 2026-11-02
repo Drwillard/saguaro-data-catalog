@@ -53,6 +53,7 @@ def provenance_findings(tables, manifest=None):
             if table not in EXPECTED:continue
             fields=list(EXPECTED[table])
             if table=='organism_observations' and not missing(row.get('longitude')):fields.append('longitude,latitude')
+            if table=='organism_observations' and not missing(row.get('verification_source_column')):fields.append('verification_status')
             for field in fields:
                 records=index.get((table,entity,field),[])
                 if not records:
