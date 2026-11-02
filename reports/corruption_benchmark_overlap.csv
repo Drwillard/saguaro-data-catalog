@@ -1,0 +1,16 @@
+left,right,both
+schema,row,10
+schema,structural,13
+schema,temporal,0
+schema,spatial,0
+schema,provenance,62
+row,structural,76
+row,temporal,14
+row,spatial,56
+row,provenance,87
+structural,temporal,13
+structural,spatial,37
+structural,provenance,62
+temporal,spatial,1
+temporal,provenance,43
+spatial,provenance,60

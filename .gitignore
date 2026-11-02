@@ -12,3 +12,5 @@ build/
 data/external/
 *.log
 reports/data_quality_report.html
+data/benchmark/
+data/lineage/

@@ -9,12 +9,13 @@ from shapely.geometry import mapping
 from pyproj import Transformer
 from ..jsonutil import dumps, sanitize
 from ..acquisition.checksums import sha256
+from ..lineage.trace import finding_node,observation_node,field_node,edge_id,evidence_entities,node_id,plain
 
 OBS_COLUMNS = ['observation_id', 'program_id', 'survey_year', 'plot_id', 'organism_id',
     'source_individual_id', 'status', 'height_m', 'arm_count', 'height_missing_reason',
     'arm_count_missing_reason', 'unit_source', 'latitude', 'longitude', 'nominal_round',
     'coordinate_time_basis']
-FINDING_COLUMNS = ['entity_identifier', 'rule_id', 'severity', 'status', 'table', 'program_id',
+FINDING_COLUMNS = ['finding_id','entity_identifier', 'rule_id', 'severity', 'status', 'table', 'program_id',
     'survey_year', 'plot_id', 'field', 'observed_value']
 VEGETATION_COLUMNS=['observation_id','program_id','survey_year','plot_id','species_raw','species_name_raw','count','count_raw','cover_raw','cover_unit_raw','area_m2']
 AGGREGATE_COLUMNS=['observation_id','program_id','survey_year','plot_id','representation','count_estimate','density_per_ha','count_basis']
@@ -80,8 +81,14 @@ def export_explorer(root, ds, summary):
             entry['transforms'].append({key: row.get(key) for key in transform_fields})
     spatial = ds.table('spatial_features')
     spatial_ids = {row['entity_identifier'] for row in findings if row['table']=='spatial_features'}
+    plot_rows={row['plot_id']:row for row in _records(ds.plots())}
+    spatial_ids.update(row['geometry_source'] for row in plot_rows.values() if isinstance(row.get('geometry_source'),str))
+    for row in findings:
+        value=_decode(row.get('observed_value'))
+        if isinstance(value,dict) and value.get('previous_feature'):spatial_ids.add(value['previous_feature'])
     for row in _records(spatial[spatial.feature_id.isin(spatial_ids)]):
-        row.pop('geometry', None)
+        geometry=row.pop('geometry', None)
+        row['geometry']=plain(geometry)
         attributes = _decode(row.pop('attributes_json'))
         details[row['feature_id']] = dict(kind='spatial_features', canonical=row, raw=attributes, transforms=[], findings=[])
     finding_rows = []
@@ -91,6 +98,24 @@ def export_explorer(root, ds, summary):
         row['source_lineage'] = lineage
         row['observed_value'] = _decode(row['observed_value'])
         row['finding_index'] = i
+        row['lineage_node_id']=finding_node(row)
+        row['lineage_edges']=[]
+        row['lineage_context']=dict(nodes=[],edges=[],entities=[])
+        if row['rule_id']=='OUTSIDE_ASSIGNED_PLOT':
+            current=details.get(entity,{}).get('canonical',{})
+            plot=plot_rows.get(current.get('plot_id'),{})
+            if isinstance(plot.get('geometry_source'),str):
+                feature=observation_node('spatial_features',plot['geometry_source']);plot_node=node_id('plot',plot['plot_id']);observation=observation_node(row['table'],entity)
+                row['lineage_context']['entities'].append(plot['geometry_source'])
+                row['lineage_context']['nodes'].append([plot_node,'plot',plot['plot_id'],{k:v for k,v in plot.items() if k!='geometry'}])
+                row['lineage_context']['edges'] += [[edge_id(feature,plot_node,'geometry_for'),feature,plot_node,'geometry_for'],[edge_id(plot_node,observation,'has_observation'),plot_node,observation,'has_observation']]
+        contributors=[(row['table'],entity,'triggered')]+[('spatial_features' if isinstance(row['observed_value'],dict) and row['observed_value'].get('previous_feature')==previous else 'organism_observations',previous,'contributes') for previous in evidence_entities(row)]
+        for table,identifier,kind in contributors:
+            source=observation_node(table,identifier);destination=row['lineage_node_id']
+            row['lineage_edges'].append([edge_id(source,destination,kind),source,destination,kind])
+            for field in row['field'].split(','):
+                source=field_node(table,identifier,field)
+                row['lineage_edges'].append([edge_id(source,destination,'validated_by'),source,destination,'validated_by'])
         target = details.get(entity)
         if target:
             target['findings'].append(row)
@@ -99,7 +124,19 @@ def export_explorer(root, ds, summary):
             survey_year=observation.get('survey_year'), plot_id=observation.get('plot_id'))
         finding_rows.append([compact.get(c) for c in FINDING_COLUMNS])
     shards = {}
+    from ..lineage.trace import evidence_trace
+    file_index={row['local_filename']:row for row in _records(ds.table('source_files'))}
+    column_index={(row['file'],row['sheet']):_decode(row['original_columns']) for row in _records(ds.table('source_inventory'))}
     for entity, entry in details.items():
+        row=entry['canonical'];table='organism_observations' if entry['kind']=='observation' else entry['kind']
+        fields=sorted({field for trace in entry['transforms'] for field in trace['field'].split(',')})
+        if table=='spatial_features':fields=['geometry','crs']
+        graph=evidence_trace(table,row,entry['transforms'],file_index.get(row.get('source_file')),fields=fields,
+            source_columns=column_index.get((row.get('source_file'),row.get('source_sheet'))))
+        # Columnar local graph slice; IDs and edge semantics are shared with the
+        # full lineage graph, avoiding a separate UI provenance model.
+        entry['lineage']=dict(root=graph['root'],nodes=[[n['id'],n['type'],n['label'],n['attributes']] for n in graph['nodes']],
+            edges=[[e['id'],e['source'],e['target'],e['type']] for e in graph['edges']])
         shards.setdefault(entity[:2], {})[entity] = entry
     for prefix, contents in shards.items():
         (details_folder / f'{prefix}.json').write_text(dumps(contents, separators=(',', ':'), default=str), encoding='utf8')

@@ -15,8 +15,9 @@
     "2000": 724,
     "2010": 830
   },
-  "validation_findings": 8412,
+  "validation_findings": 17708,
   "findings_by_rule": {
+    "PROVENANCE_SOURCE_FIELD_MISSING": 9296,
     "AMBIGUOUS_ZERO_HEIGHT": 3041,
     "DUPLICATE_COORDINATES": 1797,
     "IDENTITY_TRACKING_UNSUPPORTED": 1137,
@@ -68,7 +69,8 @@
       "expected_condition": "Review measurements recorded after explicit death",
       "message": "A standing dead cactus can be measured; positive height does not establish resurrection.",
       "source_lineage": "{\"source_dataset\": \"historic_plots\", \"source_file\": \"data/raw/historic_plots/6f62e764accb75e61b8b4d0b69c4d42d90fb91c197d85f5ae0f42c5bf9236a3a/Steenbergh&Lowe_HistoricSaguaroPlotSurvey.xls\", \"source_sheet\": \"Sheet1\", \"source_row\": 2969, \"source_reference_id\": \"2225187\", \"source_sha256\": \"6f62e764accb75e61b8b4d0b69c4d42d90fb91c197d85f5ae0f42c5bf9236a3a\", \"source_row_id\": \"25bcf04bcfcaf22c058739f5\"}",
-      "status": "open"
+      "status": "open",
+      "finding_id": "a185a66f6e4024b49b41a916"
     },
     {
       "rule_id": "TEMPORAL_SHRINKAGE",
@@ -81,7 +83,8 @@
       "expected_condition": "Decrease below configured absolute and proportional thresholds",
       "message": "Possible broken top, measurement change, unit issue, transcription error or mislinkage.",
       "source_lineage": "{\"source_dataset\": \"historic_plots\", \"source_file\": \"data/raw/historic_plots/6f62e764accb75e61b8b4d0b69c4d42d90fb91c197d85f5ae0f42c5bf9236a3a/Steenbergh&Lowe_HistoricSaguaroPlotSurvey.xls\", \"source_sheet\": \"Sheet1\", \"source_row\": 2928, \"source_reference_id\": \"2225187\", \"source_sha256\": \"6f62e764accb75e61b8b4d0b69c4d42d90fb91c197d85f5ae0f42c5bf9236a3a\", \"source_row_id\": \"227cf80f0dc047b11610d301\"}",
-      "status": "open"
+      "status": "open",
+      "finding_id": "67979131cff8765e27424dee"
     },
     {
       "rule_id": "TEMPORAL_GROWTH_OUTLIER",
@@ -94,7 +97,8 @@
       "expected_condition": "Annualized growth within interval-specific robust empirical threshold",
       "message": "Statistical screening only; no biological maximum asserted.",
       "source_lineage": "{\"source_dataset\": \"historic_plots\", \"source_file\": \"data/raw/historic_plots/6f62e764accb75e61b8b4d0b69c4d42d90fb91c197d85f5ae0f42c5bf9236a3a/Steenbergh&Lowe_HistoricSaguaroPlotSurvey.xls\", \"source_sheet\": \"Sheet1\", \"source_row\": 3091, \"source_reference_id\": \"2225187\", \"source_sha256\": \"6f62e764accb75e61b8b4d0b69c4d42d90fb91c197d85f5ae0f42c5bf9236a3a\", \"source_row_id\": \"afbbd0cd3f80ad308f101bac\"}",
-      "status": "open"
+      "status": "open",
+      "finding_id": "1584f4f41da9f294ed246413"
     },
     {
       "rule_id": "TEMPORAL_ARM_DECREASE",
@@ -107,7 +111,8 @@
       "expected_condition": "Review arm-count decreases",
       "message": "Arms can break; a decrease is a warning, not proof of source error.",
       "source_lineage": "{\"source_dataset\": \"historic_plots\", \"source_file\": \"data/raw/historic_plots/6f62e764accb75e61b8b4d0b69c4d42d90fb91c197d85f5ae0f42c5bf9236a3a/Steenbergh&Lowe_HistoricSaguaroPlotSurvey.xls\", \"source_sheet\": \"Sheet1\", \"source_row\": 2928, \"source_reference_id\": \"2225187\", \"source_sha256\": \"6f62e764accb75e61b8b4d0b69c4d42d90fb91c197d85f5ae0f42c5bf9236a3a\", \"source_row_id\": \"227cf80f0dc047b11610d301\"}",
-      "status": "open"
+      "status": "open",
+      "finding_id": "e32e8e77359e440d65f86e51"
     },
     {
       "rule_id": "OUTSIDE_ASSIGNED_PLOT",
@@ -120,7 +125,8 @@
       "expected_condition": "Point covered by exact-matched source plot polygon",
       "message": "Boundary/GPS differences or plot assignment require review.",
       "source_lineage": "{\"source_dataset\": \"historic_plots\", \"source_file\": \"data/raw/historic_plots/6f62e764accb75e61b8b4d0b69c4d42d90fb91c197d85f5ae0f42c5bf9236a3a/Steenbergh&Lowe_HistoricSaguaroPlotSurvey.xls\", \"source_sheet\": \"Sheet1\", \"source_row\": 74, \"source_reference_id\": \"2225187\", \"source_sha256\": \"6f62e764accb75e61b8b4d0b69c4d42d90fb91c197d85f5ae0f42c5bf9236a3a\", \"source_row_id\": \"2730b441b2dbc078bdea9a47\"}",
-      "status": "open"
+      "status": "open",
+      "finding_id": "86fdc4a29f23a863a6f4e73b"
     },
     {
       "rule_id": "DUPLICATE_LOCAL_SOURCE_ID",
@@ -133,7 +139,8 @@
       "expected_condition": "Unique local ID within source event and plot",
       "message": "Could be repeated rounds or source duplication; no deduplication performed.",
       "source_lineage": "{\"source_dataset\": \"census\", \"source_file\": \"data/raw/census/acd73e553169c2808c3e4829cba17e95bfdb08824144f1985befcfa6a9b589ff/SaguaroCensus_RawData_1990_2000_2010.xlsx\", \"source_sheet\": \"RawData_2000_2010\", \"source_row\": 105, \"source_reference_id\": \"2225188\", \"source_sha256\": \"acd73e553169c2808c3e4829cba17e95bfdb08824144f1985befcfa6a9b589ff\", \"source_row_id\": \"7bca6af4e8fdab8bcc9b56df\"}",
-      "status": "open"
+      "status": "open",
+      "finding_id": "30f689ba65439f8192d49618"
     },
     {
       "rule_id": "DUPLICATE_COORDINATES",
@@ -146,7 +153,8 @@
       "expected_condition": "Review shared coordinates within event",
       "message": "Shared positions may reflect source copies, precision or mapping methods.",
       "source_lineage": "{\"source_dataset\": \"historic_plots\", \"source_file\": \"data/raw/historic_plots/6f62e764accb75e61b8b4d0b69c4d42d90fb91c197d85f5ae0f42c5bf9236a3a/Steenbergh&Lowe_HistoricSaguaroPlotSurvey.xls\", \"source_sheet\": \"Sheet1\", \"source_row\": 1420, \"source_reference_id\": \"2225187\", \"source_sha256\": \"6f62e764accb75e61b8b4d0b69c4d42d90fb91c197d85f5ae0f42c5bf9236a3a\", \"source_row_id\": \"6bd75f4874f9b4660d187c45\"}",
-      "status": "open"
+      "status": "open",
+      "finding_id": "62cabaa904c28496449f4606"
     },
     {
       "rule_id": "AMBIGUOUS_ZERO_HEIGHT",
@@ -159,7 +167,8 @@
       "expected_condition": "Interpret zero only with documented sentinel semantics",
       "message": "Zero retained; excluded from temporal height comparisons.",
       "source_lineage": "{\"source_dataset\": \"historic_plots\", \"source_file\": \"data/raw/historic_plots/6f62e764accb75e61b8b4d0b69c4d42d90fb91c197d85f5ae0f42c5bf9236a3a/Steenbergh&Lowe_HistoricSaguaroPlotSurvey.xls\", \"source_sheet\": \"Sheet1\", \"source_row\": 8, \"source_reference_id\": \"2225187\", \"source_sha256\": \"6f62e764accb75e61b8b4d0b69c4d42d90fb91c197d85f5ae0f42c5bf9236a3a\", \"source_row_id\": \"f7866b0c5e85655ff3cfa0ed\"}",
-      "status": "open"
+      "status": "open",
+      "finding_id": "4047fa604bb7972f8b5be306"
     },
     {
       "rule_id": "INVALID_OR_NULL_GEOMETRY",
@@ -172,7 +181,8 @@
       "expected_condition": "Valid source geometry",
       "message": "Malformed source geometry retained as null or invalid; no repair.",
       "source_lineage": "{\"source_dataset\": \"vegetation\", \"source_file\": \"data/raw/vegetation/882f2ea68ecb57598dbb7d567cc1ca1a3e6193f00c81d494dfb7d5ab1441d102/GIS Data Veg Plots.zip\", \"source_sheet\": \"GIS Data Veg Plots/1990 Maps/Original CAD files in ArcView3_1 format/plot27/eplot27.shp\", \"source_row\": 496, \"source_reference_id\": \"2225403\", \"source_sha256\": \"882f2ea68ecb57598dbb7d567cc1ca1a3e6193f00c81d494dfb7d5ab1441d102\", \"source_row_id\": \"1ee1fef6d53514324e08c331\"}",
-      "status": "open"
+      "status": "open",
+      "finding_id": "5f5016a10f5b44e18547ed1a"
     },
     {
       "rule_id": "UNKNOWN_SPATIAL_CRS",
@@ -185,7 +195,8 @@
       "expected_condition": "CRS required before geographic comparison",
       "message": "Local or undocumented source coordinates; excluded from geographic validation. One finding per affected layer.",
       "source_lineage": "{\"source_dataset\": \"vegetation\", \"source_file\": \"data/raw/vegetation/882f2ea68ecb57598dbb7d567cc1ca1a3e6193f00c81d494dfb7d5ab1441d102/GIS Data Veg Plots.zip\", \"source_sheet\": \"GIS Data Veg Plots/1990 Data Analysis/plot01/plot1.shp\", \"source_row\": 1, \"source_reference_id\": \"2225403\", \"source_sha256\": \"882f2ea68ecb57598dbb7d567cc1ca1a3e6193f00c81d494dfb7d5ab1441d102\", \"source_row_id\": \"fd02ceb6b6235b5531f222be\"}",
-      "status": "open"
+      "status": "open",
+      "finding_id": "fcc57350894200a486d9d6d2"
     }
   ]
 }

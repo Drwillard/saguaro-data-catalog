@@ -2,13 +2,26 @@
 CITATION.cff
 LICENSE
 README.md
+configs/corruption_scenarios.yaml
 configs/schemas/census.yaml
 configs/schemas/historic_plots.yaml
 configs/schemas/section17.yaml
 configs/schemas/vegetation.yaml
 configs/sources.yaml
 configs/validation_rules.yaml
+data/benchmark/alerts.parquet
+data/benchmark/alerts_before_scoring_revision.parquet
+data/benchmark/ground_truth.parquet
+data/benchmark/results.parquet
+data/benchmark/run.json
 data/interim/<discovery pages, report text, extracted spatial layers>
+data/lineage/cli_height_trace.json
+data/lineage/cli_temporal_trace.json
+data/lineage/edges.parquet
+data/lineage/example_temporal_trace.json
+data/lineage/lineage.sqlite
+data/lineage/nodes.parquet
+data/lineage/summary.json
 data/processed/build_metadata.json
 data/processed/coordinate_displacements.parquet
 data/processed/displacement_summaries.parquet
@@ -33,8 +46,10 @@ data/processed/vegetation_observations.parquet
 data/raw/<program>/<sha256>/<original files>
 data/raw/manifest.json
 docs/canonical_model.md
+docs/corruption_benchmark.md
 docs/data_sources.md
 docs/interactive_report.md
+docs/lineage_graph.md
 docs/photo_sources.md
 docs/protocol_differences.md
 docs/provenance.md
@@ -45,9 +60,17 @@ notebooks/02_schema_comparison.ipynb
 notebooks/03_data_quality.ipynb
 notebooks/04_longitudinal_examples.ipynb
 pyproject.toml
+reports/corruption_benchmark.csv
+reports/corruption_benchmark.md
+reports/corruption_benchmark_by_class.csv
+reports/corruption_benchmark_by_intensity.csv
+reports/corruption_benchmark_by_scenario.csv
+reports/corruption_benchmark_groups.csv
+reports/corruption_benchmark_overlap.csv
 reports/data_quality_report.html
 reports/data_quality_report_static.html
 reports/explorer/<interactive assets, indexes, evidence shards and browser QA>
+reports/lineage_summary.md
 reports/repository_tree.txt
 reports/results.json
 reports/results.md
@@ -70,6 +93,11 @@ src/saguarodata/acquisition/checksums.py
 src/saguarodata/acquisition/downloader.py
 src/saguarodata/api/__init__.py
 src/saguarodata/api/dataset.py
+src/saguarodata/benchmark/__init__.py
+src/saguarodata/benchmark/corruption.py
+src/saguarodata/benchmark/metrics.py
+src/saguarodata/benchmark/runner.py
+src/saguarodata/benchmark/scenarios.py
 src/saguarodata/cli.py
 src/saguarodata/ingest/__init__.py
 src/saguarodata/ingest/census.py
@@ -81,6 +109,11 @@ src/saguarodata/ingest/spatial.py
 src/saguarodata/ingest/vegetation.py
 src/saguarodata/inventory.py
 src/saguarodata/jsonutil.py
+src/saguarodata/lineage/__init__.py
+src/saguarodata/lineage/builder.py
+src/saguarodata/lineage/export.py
+src/saguarodata/lineage/graph.py
+src/saguarodata/lineage/trace.py
 src/saguarodata/model/__init__.py
 src/saguarodata/model/canonical.py
 src/saguarodata/normalize/__init__.py
@@ -100,13 +133,17 @@ src/saguarodata/reports/explorer.py
 src/saguarodata/reports/quality_report.py
 src/saguarodata/schema_history.py
 src/saguarodata/validation/__init__.py
+src/saguarodata/validation/context.py
 src/saguarodata/validation/engine.py
+src/saguarodata/validation/provenance.py
 src/saguarodata/validation/rules.py
 src/saguarodata/validation/spatial.py
 src/saguarodata/validation/structural.py
 src/saguarodata/validation/temporal.py
+tests/benchmark/test_benchmark.py
 tests/conftest.py
 tests/integration/test_pipeline.py
+tests/lineage/test_lineage.py
 tests/unit/test_acquisition.py
 tests/unit/test_explorer.py
 tests/unit/test_json.py

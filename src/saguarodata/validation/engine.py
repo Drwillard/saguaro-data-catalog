@@ -5,6 +5,9 @@ from .rules import Finding
 from .structural import structural_findings
 from .temporal import temporal_findings
 from .spatial import spatial_findings, coordinate_displacements
+from .provenance import provenance_findings
+from .context import context_findings
+from ..acquisition.downloader import read_manifest
 from ..pipeline import write_table
 
 def validate(root='.'):
@@ -24,5 +27,10 @@ def validate(root='.'):
         summaries.append(dict(program_id=program,before_year=before,after_year=after,n=len(values),
             median_m=float(values.median()),q95_m=float(values.quantile(.95)),max_m=float(values.max())))
     write_table(root,'displacement_summaries',summaries,['program_id','before_year','after_year','n','median_m','q95_m','max_m'])
-    result = write_table(root,'validation_findings',findings,list(Finding.__dataclass_fields__))
+    tables={p.stem:pd.read_parquet(p) for p in folder.glob('*.parquet') if p.stem not in ('validation_findings',)}
+    tables['validation_findings']=pd.DataFrame(findings)
+    findings+=context_findings(tables)+provenance_findings(tables,read_manifest(root))
+    from .rules import finding_id
+    for row in findings:row['finding_id']=finding_id(row)
+    result = write_table(root,'validation_findings',findings,[*Finding.__dataclass_fields__,'finding_id'])
     return result

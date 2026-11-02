@@ -133,6 +133,55 @@ function drawMapContext(ctx,x,y,width,height,sx) {
 let pairsPlot=null,visiblePairs=[];
 let summaryRows={},visibleSummaries=[];
 let photoCatalog=null,photoPromise=null,visiblePhotos=[];
+let activeLineage=null;
+function lineagePanel(detail) {
+  const fields=[...new Set(detail.transforms.map(t=>t.field))];
+  return `<details class="lineage-panel"><summary>Explore executable evidence lineage</summary><p class="caption">A focused evidence slice, derived from the canonical provenance tables. Arrows run from source evidence to the derived value. A finding trace includes every explicitly referenced prior record; shared source rows are not independent samples.</p><div class="toolbar"><label>Canonical field<select id="lineage-field">${fields.map(field=>`<option>${esc(field)}</option>`).join('')||'<option value="">Source row only</option>'}</select></label><button id="lineage-observation">Trace selected field</button><button id="lineage-download" disabled>Export trace JSON</button></div><div id="lineage-view" aria-live="polite"></div></details>`;
+}
+async function showLineage(findingId=null) {
+  const detail=selectedDetail,token=detailToken;
+  if(!detail)return;
+  document.querySelector('.lineage-panel').open=true;
+  $('lineage-view').innerHTML='<p class="caption">Loading contributing evidence…</p>';
+  const finding=findingId?detail.findings.find(f=>f.finding_id===findingId):null;
+  const value=finding?.observed_value||{};
+  const previous=[value.previous,value.previous_observation_id,value.previous_feature,...(finding?.lineage_context?.entities||[])].filter(v=>typeof v==='string');
+  const details=[detail];const missing=[];
+  for(const entity of [...new Set(previous)]){
+    try{details.push(await loadDetail(entity));}catch{missing.push(entity);}
+  }
+  if(token!==detailToken)return;
+  let field=finding?.field||$('lineage-field').value;
+  if([...$('lineage-field').options].some(option=>option.value===field))$('lineage-field').value=field;
+  const nodes=new Map(),edges=new Map();
+  const selectedByRecord=[];
+  for(const record of details){
+    const local=record.lineage;
+    if(!local){missing.push(record.canonical.observation_id||record.canonical.feature_id);continue;}
+    const ns=new Map(local.nodes.map(([id,type,label,attributes])=>[id,{id,type,label,attributes}]));
+    const es=local.edges.map(([id,source,target,type])=>({id,source,target,type}));
+    const roots=[...ns.values()].filter(n=>n.type==='canonical_field'&&field.split(',').includes(n.attributes.field)).map(n=>n.id);
+    if(!roots.length)roots.push(local.root);
+    const keep=new Set(roots),queue=[...roots];
+    while(queue.length){const id=queue.pop();for(const edge of es)if(edge.target===id&&!keep.has(edge.source)){keep.add(edge.source);queue.push(edge.source);}}
+    keep.add(local.root);for(const id of keep)if(ns.has(id))nodes.set(id,ns.get(id));
+    for(const edge of es)if(keep.has(edge.source)&&keep.has(edge.target))edges.set(edge.id,edge);
+    selectedByRecord.push({record,nodes:[...keep].map(id=>ns.get(id)).filter(Boolean)});
+  }
+  if(finding){
+    for(const [id,type,label,attributes] of finding.lineage_context?.nodes||[])nodes.set(id,{id,type,label,attributes});
+    for(const [id,source,target,type] of finding.lineage_context?.edges||[])if(nodes.has(source)&&nodes.has(target))edges.set(id,{id,source,target,type});
+    const id=finding.lineage_node_id;
+    nodes.set(id,{id,type:'validation_finding',label:finding.rule_id,attributes:finding});
+    for(const [eid,source,target,type] of finding.lineage_edges||[])if(nodes.has(source)&&nodes.has(target))edges.set(eid,{id:eid,source,target,type});
+  }
+  activeLineage={root:finding?.lineage_node_id||detail.lineage?.root,finding_id:finding?.finding_id||null,field,nodes:[...nodes.values()],edges:[...edges.values()],missing_evidence:missing};
+  $('lineage-download').disabled=false;document.querySelector('.lineage-panel').scrollIntoView({block:'start',behavior:'smooth'});
+  $('lineage-view').innerHTML=`${finding?`<h3>${esc(finding.rule_id)} · ${esc(finding.finding_id)}</h3>`:''}${selectedByRecord.map(({record,nodes})=>{
+    const row=record.canonical;const cells=nodes.filter(n=>n.type==='source_field');const transforms=nodes.filter(n=>n.type==='transformation');const fields=nodes.filter(n=>n.type==='canonical_field');
+    return `<article class="lineage-branch"><h3><button class="textbutton" data-entity="${esc(row.observation_id||row.feature_id)}">${esc(row.survey_year||'Source feature')} · ${esc(row.plot_id||row.layer||'')} · ${esc(row.observation_id||row.feature_id)}</button></h3><div class="lineage-flow"><div><small>SOURCE ROW / CELL</small><strong>${esc(row.source_sheet)} · row ${fmt(row.source_row)}</strong>${cells.map(n=>`<p>${esc(n.attributes.source_column)}${n.attributes.exists_in_source===false?' (not found in source sheet)':''} = <code>${esc(n.attributes.value??'null')}</code></p>`).join('')}</div><span aria-hidden="true">→</span><div><small>RECORDED TRANSFORMATION</small>${transforms.length?transforms.map(n=>`<p><strong>${esc(n.attributes.transformation||'missing')}</strong><br>${esc(n.attributes.value_kind)}</p>`).join(''):'<p>Source-row lineage only; no field transformation recorded.</p>'}</div><span aria-hidden="true">→</span><div><small>CANONICAL VALUE</small>${fields.map(n=>`<p><strong>${esc(n.attributes.field)}</strong> = <code>${esc(typeof n.attributes.value==='object'?pretty(n.attributes.value):n.attributes.value??'null')}</code></p>`).join('')||'<p>Source record</p>'}</div></div></article>`;
+  }).join('')}<div class="lineage-artifacts">${[...nodes.values()].filter(n=>n.type==='source_artifact').map(n=>`<p><strong>${esc(n.attributes.filename)}</strong><br><code>SHA-256 ${esc(n.attributes.sha256)}</code><br><a href="${esc(n.attributes.source_url)}" target="_blank" rel="noopener">Original NPS reference ↗</a></p>`).join('')}</div>${missing.length?`<p class="finding-card error">Missing evidence: ${esc(missing.join(', '))}. Trace is incomplete.</p>`:''}`;
+}
 const shardCache = new Map();
 const hashKeys=['tab','program','year','q','rule','severity','mode','pairMeasure','pairInterval','summaryKind','representation','entity','fi'];
 state.mapBackground='topo';state.mapView='records';
@@ -607,13 +656,13 @@ function renderDetail(detail) {
   const ordered=selectedFinding?[selectedFinding,...detail.findings.filter(item=>item!==selectedFinding)]:detail.findings;
   const findingsHTML=ordered.map(item=>{
     const previous=item.observed_value?.previous||item.observed_value?.previous_observation_id;
-    return `<article class="finding-card ${esc(item.severity)} ${item===selectedFinding?'active':''}"><h3>${badge(item.severity)} ${esc(item.rule_id)} · ${badge(item.status)}</h3><p>${esc(item.message)}</p><p><strong>Expected:</strong> ${esc(item.expected_condition)}</p><pre>${esc(pretty(item.observed_value))}</pre>${previous?`<button class="textbutton" data-entity="${esc(previous)}">Open the prior observation →</button>`:''}</article>`;
+    return `<article class="finding-card ${esc(item.severity)} ${item===selectedFinding?'active':''}"><h3>${badge(item.severity)} ${esc(item.rule_id)} · ${badge(item.status)}</h3><p>${esc(item.message)}</p><p><strong>Expected:</strong> ${esc(item.expected_condition)}</p><pre>${esc(pretty(item.observed_value))}</pre><button data-lineage-finding="${esc(item.finding_id)}">Trace finding evidence</button>${previous?`<button class="textbutton" data-entity="${esc(previous)}">Open the prior observation →</button>`:''}</article>`;
   }).join('')||'<p class="caption">No validation finding is recorded for this entity. This is not evidence that every possible check was applicable.</p>';
   const highlight=new Set(detail.transforms.filter(t=>!selectedFinding||selectedFinding.field.split(',').includes(t.field)).map(t=>t.source_column));
   const sourceField=selectedFinding?.field||'';
   const rawHTML=`<div class="scroll"><table><thead><tr><th>Original field</th><th>Source value</th></tr></thead><tbody>${Object.entries(detail.raw||{}).map(([key,value])=>`<tr class="${highlight.has(key)||key===sourceField?'raw-highlight':''}"><td>${esc(key)}</td><td>${value===''?'<span class="caption">(blank string)</span>':value===null?'<span class="caption">(null)</span>':esc(typeof value==='object'?pretty(value):value)}</td></tr>`).join('')}</tbody></table></div>`;
   const transformsHTML=detail.transforms.length?`<div class="scroll"><table><thead><tr><th>Canonical field</th><th>Source field</th><th>Source value</th><th>Normalized value</th><th>Transformation</th><th>Value kind</th></tr></thead><tbody>${detail.transforms.map(t=>`<tr><td>${esc(t.field)}</td><td>${esc(t.source_column||'not collected')}</td><td>${t.source_value===''?'(blank)':esc(t.source_value??'null')}</td><td>${esc(t.normalized_value??'null')}</td><td class="mono">${esc(t.transformation)}</td><td>${badge(t.value_kind,t.value_kind)}</td></tr>`).join('')}</tbody></table></div>`:empty('No field-normalization trace is recorded for this source representation. Raw attributes and file lineage remain available.');
-  $('detail-body').innerHTML=`<div class="record-facts">${facts.map(([title,value])=>`<div class="record-fact"><small>${esc(title)}</small>${esc(value)}</div>`).join('')}</div>${photoEvidenceHTML(detail)}<h3>Review findings (${detail.findings.length})</h3>${findingsHTML}${isObservation?historyHTML(row):''}<h3>Source lineage</h3>${sourceBox(row)}<div class="detail-tabs" role="tablist" aria-label="Evidence views"><button data-detail-tab="raw" aria-selected="true" role="tab">Raw source values</button><button data-detail-tab="transforms" aria-selected="false" role="tab">Transformations</button><button data-detail-tab="canonical" aria-selected="false" role="tab">Canonical record</button></div><div data-detail-panel="raw">${rawHTML}</div><div data-detail-panel="transforms" hidden>${transformsHTML}</div><div data-detail-panel="canonical" hidden><pre class="raw-json">${esc(pretty(row))}</pre></div>`;
+  $('detail-body').innerHTML=`<div class="record-facts">${facts.map(([title,value])=>`<div class="record-fact"><small>${esc(title)}</small>${esc(value)}</div>`).join('')}</div>${photoEvidenceHTML(detail)}<h3>Review findings (${detail.findings.length})</h3>${findingsHTML}${isObservation?historyHTML(row):''}${lineagePanel(detail)}<h3>Source lineage</h3>${sourceBox(row)}<div class="detail-tabs" role="tablist" aria-label="Evidence views"><button data-detail-tab="raw" aria-selected="true" role="tab">Raw source values</button><button data-detail-tab="transforms" aria-selected="false" role="tab">Transformations</button><button data-detail-tab="canonical" aria-selected="false" role="tab">Canonical record</button></div><div data-detail-panel="raw">${rawHTML}</div><div data-detail-panel="transforms" hidden>${transformsHTML}</div><div data-detail-panel="canonical" hidden><pre class="raw-json">${esc(pretty(row))}</pre></div>`;
 }
 async function openSource(index) {
   await ensureSources();const row=sources.inventory[index];if(!row)return;
@@ -660,9 +709,12 @@ function attachEvents() {
   $('map-background').onchange=()=>{state.mapBackground=$('map-background').value;syncHash();drawMap();};
   document.querySelectorAll('[data-map-layer]').forEach(input=>input.onchange=()=>{mapLayers[input.dataset.mapLayer]=input.checked;drawMap();});
   $('close-detail').onclick=()=>$('detail').close();
-  $('detail').addEventListener('close',()=>{detailToken++;state.entity='';state.fi='';syncHash();});
+  $('detail').addEventListener('close',()=>{if($('detail').open)return;detailToken++;state.entity='';state.fi='';syncHash();});
   document.addEventListener('click',event=>{
     const target=event.target.closest('button,[data-entity], [data-source]');if(!target)return;
+    if(target.dataset.lineageFinding){showLineage(target.dataset.lineageFinding);return;}
+    if(target.id==='lineage-observation'){showLineage();return;}
+    if(target.id==='lineage-download'&&activeLineage){downloadText(pretty(activeLineage),'saguarodata-lineage-trace.json','application/json');return;}
     if(target.dataset.photoBrowse){$('detail').close();setTab('photos');return;}
     if(target.dataset.tab){if(target.dataset.summaryKind){state.summaryKind=target.dataset.summaryKind;state.representation='';state.pageSummary=0;}setTab(target.dataset.tab);return;}
     if(target.dataset.programPick){updateScope({program:state.program===target.dataset.programPick?'':target.dataset.programPick});return;}

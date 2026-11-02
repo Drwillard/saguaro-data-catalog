@@ -18,8 +18,9 @@
     "2000": 724,
     "2010": 830
   },
-  "validation_findings": 8412,
+  "validation_findings": 17708,
   "findings_by_rule": {
+    "PROVENANCE_SOURCE_FIELD_MISSING": 9296,
     "AMBIGUOUS_ZERO_HEIGHT": 3041,
     "DUPLICATE_COORDINATES": 1797,
     "IDENTITY_TRACKING_UNSUPPORTED": 1137,

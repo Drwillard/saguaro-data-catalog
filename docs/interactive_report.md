@@ -23,6 +23,8 @@ Open http://127.0.0.1:8000/data_quality_report.html. Interactive data files are 
 
 Every observation drawer provides source file/hash/sheet/physical row, raw source cells, normalized values, transformation kind, applicable findings, and any source-supported history. Clickable history points select the corresponding observation. Raw and normalized values are separate evidence views. Full evidence can be downloaded as JSON. Observation, finding, linked-pair and summary registers export filtered CSV. Row IDs in CSV link back to the full evidence; CSV is a view export, not a replacement for canonical Parquet.
 
+**Explore executable evidence lineage** opens a compact source-to-transformation-to-value view for a selected field. **Trace finding evidence** loads each explicitly referenced prior observation/feature and shows both evidence branches with their original artifacts. Source columns absent from the inventoried sheet are marked, not silently certified. Trace JSON uses the same node/edge IDs as the full Python lineage graph. See [graph semantics and provenance gaps](lineage_graph.md).
+
 `Copy view link` and record links retain filters and the selected entity in the URL fragment. Links are local to the same served build; content-addressed observation IDs can change when source bytes change. Chart viewport pan/zoom is exploratory and is not encoded in the link.
 
 ## Interpretation and performance

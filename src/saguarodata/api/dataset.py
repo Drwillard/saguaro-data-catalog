@@ -39,6 +39,17 @@ class Dataset:
         frame = self.table('provenance')
         return frame[frame.observation_id.eq(observation_id) & frame['table'].eq(table)].reset_index(drop=True)
 
+    def lineage_graph(self,rebuild=False):
+        from ..lineage import LineageGraph,build_graph
+        from ..acquisition.checksums import sha256
+        import json
+        folder=self.path.resolve().parent/'lineage'
+        if rebuild or not (folder/'lineage.sqlite').exists():return build_graph(self.path.resolve().parent.parent)
+        metadata=json.loads((folder/'summary.json').read_text())
+        current={p.name:sha256(p) for p in sorted(self.path.glob('*.parquet'))}
+        if current!=metadata['canonical_sha256']:raise ValueError('Lineage graph is stale. Run saguarodata lineage build or use rebuild=True.')
+        return LineageGraph(folder/'lineage.sqlite')
+
     def duckdb(self, filename=None):
         """Optional materialized SQL database; no spatial extension is required."""
         import duckdb

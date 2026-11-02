@@ -102,7 +102,50 @@ Vegetation 1990 workbook sheets are header-only. Its historical mapped attribute
 
 The report does not claim confirmed resurrection, confirmed source errors, or ecological conclusions. Unresolved cover units, inferred Historic height units, ambiguous zero heights, missing spatial references, inconsistent plot descriptions and dated free-text notes are visible limitations. See [protocol evidence](docs/protocol_differences.md), [canonical schema](docs/canonical_model.md), [validation rules](docs/validation_rules.md), [provenance](docs/provenance.md), and [research notes](docs/research_notes.md).
 
-## Repository
+## Corruption benchmark and evidence graph
+
+The project compares conventional validation with identity, temporal, spatial and
+provenance context using 30 deterministic synthetic corruption scenarios. Trials
+run on isolated canonical copies, subtract unchanged-cohort findings, and preserve
+ground truth and detector outcomes. Results are benchmark evidence, not ecological
+conclusions or estimates of natural source-error prevalence.
+
+```powershell
+saguarodata validate
+saguarodata benchmark corruption --seeds 1,2,3 --count 100 --sample-size 1200
+saguarodata benchmark corruption --seed 42 --count 30 --sample-size 1200 --intensity 0.25 --append
+saguarodata benchmark report
+saguarodata lineage build
+saguarodata lineage export --format graphml
+saguarodata lineage trace --observation-id fbc090fb9c5184f1043c1027 --field height_m
+saguarodata report
+```
+
+Run validation **before** the benchmark and graph build; do not change the normal
+processed tables while either is running. `--sample-size 0` benchmarks the entire
+corpus. Count controls independent injected trials, not simultaneous damage density.
+The real-data provenance audit found 9,296 status traces naming an absent source
+column; these are mapping review findings, with no source or canonical value
+silently repaired. Total findings after the added checks: 17,708.
+
+```python
+graph = ds.lineage_graph()
+trace = graph.trace_field(observation_id, "height_m")
+finding = ds.validation_findings().query("rule_id == 'TEMPORAL_SHRINKAGE'").iloc[0]
+evidence = graph.trace_finding(finding.finding_id)
+```
+
+Observation drawers offer **Explore executable evidence lineage**; finding cards
+offer **Trace finding evidence**, including explicitly referenced prior records.
+The graph uses typed local tables and streaming exports, with no graph server or
+new runtime dependency. Canonical/provenance tables remain authoritative.
+
+Read [benchmark methods](docs/corruption_benchmark.md), [graph semantics and gaps](docs/lineage_graph.md),
+[executed benchmark results](reports/corruption_benchmark.md), and
+[executed lineage coverage](reports/lineage_summary.md). Large benchmark/graph files
+live under ignored `data/benchmark/` and `data/lineage/`; small reports can be tracked.
+
+## Repository contents
 
 Track `src/` (including bundled map JSON/JPEG assets), `configs/`, `tests/`, `scripts/`, `docs/`, `notebooks/`, `.gitignore`, `pyproject.toml`, `requirements-lock.txt`, `README.md`, `LICENSE`, `CITATION.cff`, and `data/raw/manifest.json`. The small generated `data/processed/build_metadata.json`, static report, results, inventory and repository-tree snapshots can also be retained as review evidence; regenerate them when source inputs or relevant code change.
 

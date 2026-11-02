@@ -22,7 +22,7 @@ with sync_playwright() as playwright:
     expect(page.locator('#application')).to_be_visible(timeout=60000)
     page.wait_for_function('window.saguarodataExplorer !== undefined')
     assert page.evaluate('window.saguarodataExplorer.counts.observations')==63432
-    assert page.evaluate('window.saguarodataExplorer.counts.findings')==8412
+    assert page.evaluate('window.saguarodataExplorer.counts.findings')==17708
     checks.append('Full corpus counts agree with the canonical build')
     page.screenshot(path=str(out/'overview.png'),full_page=True)
 
@@ -33,7 +33,7 @@ with sync_playwright() as playwright:
     page.select_option('#pair-interval','2010–2014')
     page.wait_for_function('pairsPlot && pairsPlot.points.length > 0')
     page.screenshot(path=str(out/'linked-changes.png'),full_page=True)
-    point=page.evaluate('pairsPlot.points.find(p=>p.pair.height_after<p.pair.height_before*.8) || pairsPlot.points[0]')
+    point=page.evaluate("pairsPlot.points.find(p=>(entityFindings.get(p.pair.after_id)||[]).some(f=>f.rule_id==='TEMPORAL_SHRINKAGE')) || pairsPlot.points[0]")
     box=page.locator('#pairs').bounding_box()
     page.mouse.click(box['x']+point['x'],box['y']+point['y'])
     expect(page.locator('#detail')).to_be_visible()
@@ -41,6 +41,28 @@ with sync_playwright() as playwright:
     expect(page.locator('#detail-body')).to_contain_text('Source-supported individual history')
     assert page.locator('.history-point').count()>=2
     checks.append('Pair scatter opens a real record and supported full history')
+    shrinkage=page.locator('.finding-card').filter(has_text='TEMPORAL_SHRINKAGE').first
+    assert shrinkage.count()>0
+    if shrinkage.count():
+        shrinkage.locator('[data-lineage-finding]').click()
+        page.wait_for_function('activeLineage && activeLineage.finding_id && activeLineage.nodes.filter(n=>n.type==="canonical_observation").length===2')
+        expect(page.locator('#lineage-view')).to_contain_text('SHA-256')
+        assert page.locator('.lineage-branch').count()==2
+        with page.expect_download() as info:page.locator('#lineage-download').click()
+        info.value.save_as(str(out/'lineage-trace.json'))
+        trace=json.loads((out/'lineage-trace.json').read_text())
+        assert trace['nodes'] and trace['edges'] and not trace['missing_evidence']
+        db=Path('data/lineage/lineage.sqlite')
+        if db.exists():
+            import sqlite3
+            connection=sqlite3.connect(db)
+            try:
+                assert all(connection.execute('SELECT 1 FROM nodes WHERE id=?',(n['id'],)).fetchone() for n in trace['nodes'])
+                assert all(connection.execute('SELECT 1 FROM edges WHERE id=?',(e['id'],)).fetchone() for e in trace['edges'])
+            finally:connection.close()
+        page.locator('#lineage-view').evaluate("element=>element.scrollIntoView({block:'start',behavior:'instant'})")
+        page.screenshot(path=str(out/'lineage-evidence.png'))
+        checks.append('Temporal finding shows both evidence branches; exported UI node/edge IDs match the built graph')
     with page.expect_download() as info:page.locator('#detail-export').click()
     download=info.value;download.save_as(str(out/'evidence.json'))
     evidence=json.loads((out/'evidence.json').read_text())
@@ -84,6 +106,14 @@ with sync_playwright() as playwright:
     expect(page.locator('#detail-body')).to_contain_text('Column profiles',timeout=30000)
     page.locator('#close-detail').click()
     checks.append('Every filtered spatial finding drills into source attributes and column profiles')
+    containment=page.evaluate("findings.find(f=>f.rule_id==='OUTSIDE_ASSIGNED_PLOT')")
+    page.evaluate('async id=>{await openEntity(id)}',containment['entity_identifier'])
+    expect(page.locator('#detail')).to_be_visible()
+    page.locator('.finding-card').filter(has_text='OUTSIDE_ASSIGNED_PLOT').first.locator('[data-lineage-finding]').click()
+    page.wait_for_function('activeLineage && activeLineage.edges.some(e=>e.type==="geometry_for")')
+    assert page.evaluate('activeLineage.nodes.some(n=>n.type==="plot") && activeLineage.missing_evidence.length===0')
+    page.locator('#close-detail').click()
+    checks.append('Containment finding retains assigned polygon source evidence in its compact lineage slice')
 
     page.locator('[data-tab="sources"]').click()
     expect(page.locator('#sources-table tbody tr')).to_have_count(25,timeout=30000)

@@ -1,0 +1,4 @@
+validation_group,injected,detections,misses,recall
+conventional,330,183,147,0.5545454545454546
+contextual,330,303,27,0.9181818181818182
+all,330,320,10,0.9696969696969697
