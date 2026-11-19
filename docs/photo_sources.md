@@ -1,7 +1,7 @@
 # Photo sources and original links
 
 The interactive **Photos & original sources** tab is available at
-http://127.0.0.1:8000/data_quality_report.html#tab=photos after generating the report.
+http://127.0.0.1:8765/data_quality_report.html#tab=photos after generating the report.
 This is a link catalog: the app does not embed or download photographs. Selecting
 a link opens its original provider in a new tab.
 

@@ -9,7 +9,7 @@ from pathlib import Path
 from playwright.sync_api import sync_playwright, expect
 
 parser=argparse.ArgumentParser()
-parser.add_argument('--url',default='http://127.0.0.1:8000/data_quality_report.html')
+parser.add_argument('--url',default='http://127.0.0.1:8765/data_quality_report.html')
 args=parser.parse_args()
 out=Path('reports/explorer/qa');out.mkdir(parents=True,exist_ok=True)
 errors=[];checks=[]

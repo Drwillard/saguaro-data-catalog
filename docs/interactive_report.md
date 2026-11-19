@@ -5,10 +5,10 @@ Run `saguarodata report` after building and validating the canonical data. This 
 Serve the **reports directory**, preserving its `explorer/` subdirectory:
 
 ```powershell
-python -m http.server 8000 --bind 127.0.0.1 --directory reports
+python -m http.server 8765 --bind 127.0.0.1 --directory reports
 ```
 
-Open http://127.0.0.1:8000/data_quality_report.html. Interactive data files are loaded with HTTP requests; use the static fallback when opening files directly from disk. The explorer uses no external JavaScript libraries, analytics or CDN scripts. The Spatial view uses bundled geographic layers and regional terrain snapshots. With a terrain background selected, it requests map images from USGS (topographic) or Esri (shaded relief) for the visible extent; plain coordinates uses local assets only. Source links open the cited providers.
+Open http://127.0.0.1:8765/data_quality_report.html. Interactive data files are loaded with HTTP requests; use the static fallback when opening files directly from disk. The explorer uses no external JavaScript libraries, analytics or CDN scripts. The Spatial view uses bundled geographic layers and regional terrain snapshots. With a terrain background selected, it requests map images from USGS (topographic) or Esri (shaded relief) for the visible extent; plain coordinates uses local assets only. Source links open the cited providers.
 
 ## Paths through the evidence
 
